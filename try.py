@@ -55,17 +55,53 @@ for x in range(1,19):
 print(radlist)
 print(coslist)
 
-#print('Defining Functions that formats radians')	#****************
-#import math
-#pi=math.pi
-#for x in range(1,19):
-#	degrees = x * degint
-#	radians=degrees*pi/180
-#	degs=str(degrees)
-#	rads=str(radians)
-#	def fixformat(rads)
-#	while len(rads)<7:
-#		rads=rads+"  "
-#		return s
-#	r=fixformat(rads)
-#	print(r)
+print('creating an array')
+import numpy
+a=numpy.zeros((6,3))
+for i in range(6):
+	for j in range (3):
+		a[i][j]=i+j
+print(a)
+
+print('creating a rotation matrix of 30º') #useful when creating array of non-integers
+rot=numpy.empty((2,2))
+anglerad=30*pi/180	
+rot[0][0]=math.cos(anglerad)
+rot[0][1]=math.sin(anglerad)
+rot[1][0]=-math.sin(anglerad)
+rot[1][1]=math.cos(anglerad)
+print(rot)
+
+print('Creating a circle')
+circlearr=numpy.empty((18,2))
+b=numpy.linspace(0,360,18)
+for i in range(18):
+	angle=0
+	incr=2*pi/18	#already in radians, no need to convert
+	angle+=incr	#original angle plus the increments of incr. it is additive
+	#can also do:
+	#	ang=0
+	#	incr=2*pi/18
+	#	angle=ang+i*incr
+	x=math.cos(angle)
+	y=math.sin(angle)
+circlearr[i][0]=x
+circlearr[i][1]=y
+print(circlearr)
+
+
+print('Now rotating this circle and scaling by 2')
+rotcirc=numpy.dot(circlearr, rot)
+scalerotcirc=2.*rotcirc
+print(scalerotcirc)
+
+
+print('Working with matplotlib')
+import numpy
+import matplotlib.pyplot as plt
+x=numpy.array(range(10))
+y=3*x
+plt.plot(x,y)
+#plt.show()
+
+

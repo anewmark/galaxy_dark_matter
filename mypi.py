@@ -1,47 +1,69 @@
+## still working on this
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 import timeit
-points=[100,1000,10000,100000]
-a=[0,points[0]-1]
-b=[points[0],points[1]-1]
-c=[points[1],points[2]-1]
-d=[points[2],points[3]-1]
-bins=[a,b,c,d]
-print(bins)
+points=[10, 100,1000,10000,100000]
 sqrt=math.sqrt
 inside=0
-for npoints in points:
-    for i in range(0,npoints):
-        circ=np.random.rand(1,2)
-        x=circ[:,0]
-        y=circ[:,1]
-        #print('x is', x)
-        r=sqrt(x**2+y**2)
-        #print('circ is', circ)
-        #print('this was',i)
-        if r<=1:
-            inside+=1
-            #print('good radius is ',r)
-    pi=4*inside/npoints
-    print('pi is', pi)
-times=np.empty((4,1))
-for i in range(0,4):
+repeat=1
+Nruns=1000
+if repeat:
+	points=[10, 100,1000,10000,100000]
+	length=len(points)
+	pis=[]
+	pisst=[]
+	for i in range(0,length):
+		pisj=[]
+		for j in range(0,Nruns):
+			N=points[i]
+			x=-1+2*np.random.rand(N)
+			y=-1+2*np.random.rand(N)
+			inside=(x**2+y**2<1).sum()
+			pi=4*inside/N
+			#print('pi is', pi)
+			pisj.append(pi)
+		#print(pism)
+		pisj=np.array(pisj)
+		print(pisj.mean(), pisj.std())
+		#print(pisj)
+		pis.append(pi)
+		pisst.append(pisj)
+	print(pisst)
+	print(len(pisst))
+	pisst=np.array(pisst)
+	#print(pisst.mean(), pisst.std())
+	
+
+
+
+darts=0
+if darts:
+	plt.plot(pis, "bD", xdata=pis, ydata=0)
+	plt.xlabel('Value of Pi')
+	pix=math.pi
+	piy=0
+	plt.plot(pix, piy, 'ro', label='pi')
+	plt.show()
+    
+times=np.empty((5,1))
+for i in range(0,5):
     time=timeit.timeit(number=points[i])
     print('calculates in',time, ' seconds')
     times[i]=time
-print(times)
+#print(times)
 
-N=4 #four separate bars
-ind = np.arange(N) #x location for bar groups
-width=10 #width of each bar graph
-rects = plt.bar(points, times, width=1)
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel('Number of Points')
-plt.ylabel('Time (s)')
-plt.suptitle("The amount of time it takes Python to calculate pi according to number of sources")
-#plt.bar(points, times)
-plt.show()
+timetable=0
+if timetable:
+	N=5 #four separate bars
+	width=10 #width of each bar graph
+	rects = plt.bar(points, times, width=10, color='b')
+	plt.xscale('log')
+	#plt.yscale('log')
+	plt.xlabel('Number of Points (Log10)')
+	plt.ylabel('Time (s)')
+	plt.suptitle("Time Calculation based on Number of Points", fontsize=12)
+	plt.show()
 
 
+##another way to calculate pi

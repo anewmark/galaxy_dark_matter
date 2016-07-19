@@ -155,13 +155,13 @@ def get_slopes(lum, hx, x, y, error=None, names=None, smax=False):
 			#mx=xrow[xrow>=hhx]
 			#my=yrow[xrow>=hhx]
 			
-			if smax is True:
+			if smax== True:
 				hhx10=10**hhx
 				hhx2s=mult*hhx10
 				hhx2=math.log10(hhx2s)
 				
 				bad=0
-				print(hhx2, np.max(xrow))
+				#print(hhx2, np.max(xrow))
 				if np.max(xrow) >= hhx2:
 					mx=xrow[(xrow>=hhx)&(xrow<=hhx2)]
 					my=yrow[(xrow>=hhx)&(xrow<=hhx2)]
@@ -173,7 +173,7 @@ def get_slopes(lum, hx, x, y, error=None, names=None, smax=False):
 				else:
 					print('Upper Cut is Out of the Radius Range')
 					bad += 1
-			elif smax is False:
+			else:
 				merr=errow[xrow>=hhx]
 				mx=xrow[xrow>=hhx]
 				my=yrow[xrow>=hhx]
@@ -192,15 +192,17 @@ def get_slopes(lum, hx, x, y, error=None, names=None, smax=False):
 			intercepts.append(int)
 			errs.append(std_err)
 		return slopes, intercepts, errs
-	else:
+	else: #for arrays of 1D *aka* the stacked profile
 		x=np.array(x)
+		print('r1/2 limit is ', hx)
+		print('xrange for stacked is ', x)
 		if error is None:
 			error=np.ones(N)
-		if smax is True:
+		if smax== True:
 			hx10=10**hx
 			hx2s=mult*hx10
 			hx2=math.log10(hx2s)
-			
+			print('upper limit is ', hx2)
 			if np.max(x) <= hx2:
 				print('Upper cut is out of the Radius range')
 			else:
@@ -211,11 +213,11 @@ def get_slopes(lum, hx, x, y, error=None, names=None, smax=False):
 			xcut=x[x>=hx]
 			ycut=y[x>=hx]
 			errcut=error[x>=hx]
-		print('Radii are= ', x)
+		print('Radii are= ', xcut)
 		print('R1/2 is= ', hx)
 		
 		sl3, C3, std_err3=my_linregress3(xcut, ycut, errcut)
-		#y4 = sl3 * xcut + C3
+		
 		return sl3, C3, xcut, ycut, std_err3, errcut
 		
 def get_slopes1(data, lum, hx, x, y, error=None, names=None, smax=False):

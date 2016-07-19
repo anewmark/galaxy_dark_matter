@@ -43,26 +43,36 @@ def do_cuts(datatab):
 	
 DATA=do_cuts(DATA)
 
+
 def get_agebin_dat(Data, hm):
 	print('Running Age Bin')
 	runid=Data['RUNID']
 	runIDs, count=np.unique(runid, return_counts=True)
-
-	run=5
-	#ndata=Data[(runid==1)or(runid==5)] #only looking at first runID
-	#ndata=Data[runid==1 or 5]	
-	ndata=Data[runid==5]
+	ndata=Data[(runid==5) | (runid==1)]
+	runtest=''
+	if runtest=='yes':
+		test1=Data[runid==1]
+		test5=Data[runid==5]
+		gal1, count1=np.unique(test1['SPECOBJID'],return_counts=True)
+		gal5, count5=np.unique(test5['SPECOBJID'],return_counts=True)
+		print('Number of galaxies in run1= ', len(gal1))
+		print('Howmany times they repeat: ', count1)
+		print('Number of galaxies in run5= ', len(gal5))
+		print('Howmany times they repeat: ', count5)
+		gal, count=np.unique(ndata['SPECOBJID'],return_counts=True)
+		print('Number of galaxies in run==1,5: ', len(gal))
+		print('How many times they repeat: ', count)
 	newdata, notdat=mass_frac_cut1(ndata, hm, get_opp=True)
 
 	return newdata, notdat
 	
-hh=0.584
+hh=0.7
 newdata, datanot= get_agebin_dat(DATA, hh)
 
 starts1=newdata['AGESTART']
 starts2=datanot['AGESTART']
-data1=newdata[starts1==np.max(starts1)]
-data2=datanot[starts2==np.max(starts2)]
+data1=newdata[starts1==9.04]
+data2=datanot[starts2==9.04]
 
 print('After all of these cuts, there are ', len(data1), 'older galaxies left')
 print('After all of these cuts, there are ', len(data2), 'younger galaxies left')
@@ -70,15 +80,57 @@ print('After all of these cuts, there are ', len(data2), 'younger galaxies left'
 def my_halflight2(dat1):
 	lum1, rad1, lumd1= get_ind_lums(dat1, bands, aperture, scale='log')
 	
-	#print(lum1)
-	print('Min rad= ', 10**np.min(rad1), 'max rad= ', 10**np.max(rad1))
+	def upper_rad_cut(lum, rad, den): #this should get rid of galaxies outside 4r1/2
+		from def_mymath import halflight
+		nlum=[]
+		nrad=[]
+		nden=[]
+		mult=4
+		for x in range(len(rad)):
+			lums=lum[x]
+			rads=rad[x]
+			dens=den[x]
+			half=math.log10(10**np.max(lums)/2.0)
+			hhx=halflight(rads,lums)
+			
+			hhx10=10**hhx
+			hhx2s=mult*hhx10
+			hhx2=math.log10(hhx2s)
+			if np.max(rads) >= hhx2:
+				mx=rads[(rads>=hhx)&(rads<=hhx2)]
+				if len(mx)>=4:
+					nlum.append(lums)
+					nrad.append(rads)
+					nden.append(dens)
+				else:
+					print('not enough data points')
+			else:
+				print('Upper limit out of range')
+		nlum=np.array(nlum)
+		nrad=np.array(nrad)
+		nden=np.array(nden)
+		return nlum, nrad, nden
+	
+		#print(len(lum1))	
+	lum1, rad1, lumd1=upper_rad_cut(lum1, rad1, lumd1)
+		#print(len(lum1))
+		#print('Min rad= ', 10**np.min(rad1), 'max rad= ', 10**np.max(rad1))
+	
 	mlum1, mdens1, mrad1, merr1= get_avg_lums(lum1, rad1, lumd1, type=ty)
 	
 	hrad1= get_halflight(lum1, rad1)
-	
 	mhrad1= get_halflight(mlum1, mrad1)
 	
-	m1s, c1s, err1s= get_slopes(lum1, hrad1, rad1, lumd1, error=None, names=None, smax=False)
+	test_half=''
+	if test_half=='go':
+		bs=np.linspace(0,1.2,num=10, endpoint=False)
+		plt.hist(hrad1,bins=bs, label='Total # Galaxies: '+str(len(hrad1)), color='red', alpha=0.9, zorder=2)
+		plt.axvline(mhrad1, color='blue',label='Stacked half-light radius', zorder=3)
+		plt.xlabel('Log10 Half-Light Radii')
+		plt.legend(loc=0,prop={'size':6.5})
+		plt.show()
+	
+	m1s, c1s, err1s= get_slopes(lum1, hrad1, rad1, lumd1, error=None, names=None, smax=True)
 		
 	m1, c1, radcut1, dencut1, sterr1, errcut1 =get_slopes(mlum1, mhrad1, mrad1, mdens1, error=merr1, names=None, smax=False)
 	
@@ -112,11 +164,11 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import math
 		f=plt.figure()
 		plt.scatter(x1, y1, color='r', marker='o',label=tag1[1]+' ('+str(len(inds1[0]))+')')
-		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+': slope= '+str(round(m1,2))+' +- '+str(round(sterr1,2)))
+		plt.plot(xcut1, yfit1, color='m', label='(>'+str(per)+') mean slope= '+str(round(m1,2))+' +- '+str(round(sterr1,2)))
 		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r')	
 
 		plt.scatter(x2, y2, color='b', marker='o',label=tag2[1]+' ('+str(len(inds2[0]))+')')
-		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+': slope= ' +str(round(m2,2))+' +- '+str(round(sterr2,2)))
+		plt.plot(xcut2, yfit2, color='c', label='(<'+str(per)+') mean slope= ' +str(round(m2,2))+' +- '+str(round(sterr2,2)))
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b')
 
 		plt.xlabel('Log Radii (kpc)')
@@ -149,8 +201,8 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		#print('Standard Deviation ('+tag1[2]+'): ', str(round(np.std(m1s),2)))
 		#print('Standard Deviation ('+tag2[2]+'): ', str(round(np.std(m2s),2)))
 		
-		plt.axvline(x=m1, color='magenta',label='(>'+str(per)+') mean slope= '+str(round(m1,2))+' +- '+str(round(sterr1,2)))
-		plt.axvline(x=m2, color='cyan', label='(<'+str(per)+') mean slope= '+str(round(m2,2))+' +- '+str(round(sterr2,2)))
+		plt.axvline(x=m1, color='magenta',label='(>'+str(per)+') mean slope= '+str(round(m1,2))+' +- '+str(round(sterr1,2)), zorder=3)
+		plt.axvline(x=m2, color='cyan', label='(<'+str(per)+') mean slope= '+str(round(m2,2))+' +- '+str(round(sterr2,2)), zorder=3)
 		plt.xlabel('Slopes', fontsize=10)
 		
 		plt.legend(loc=0,prop={'size':6.5})
@@ -185,17 +237,17 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		
 			
 	#slopevLmax(ind_slope1[0],ind_slope2[0], inds1[1], inds2[1])
-	dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=True)
+	dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=False)
 	
-	#lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
+	lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
 	
 inds1, means1, ind_slope1, mean_slopes1=my_halflight2(data1)
 inds2, means2, ind_slope2, mean_slopes2=my_halflight2(data2)		
 		
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2)
 
-test='flagged samp'
-if test=='flagged samp':
+test='flagged'
+if test=='flagged':
 	Flag1=['flags_pixel_bright_object_center', 'brobj_cen_flag-', 'No Bright Ojbect Centers', 'Only Bright Object Centers', 'brobj_cen_flag']
 	
 	Flag2=['flags_pixel_bright_object_any', 'brobj_all_flag-', 'No Bright Ojbects', 'Only Bright Objects', 'brobj_all_flag']

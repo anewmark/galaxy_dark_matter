@@ -36,6 +36,11 @@ def mass_frac_cut1(datas, mn, get_opp=False):  #original way
 	else:
 		print('Length of data after mf mincut: ', len(newdat))
 		return newdat
+		
+def mass_frac_cut2(datas, mn, get_opp=False):
+	sums='ugh'
+	#data1=datas[(ageend==np.max(ageend))&(datas['MASS'])] np reshape, sum over axis=0
+
 	
 def divide_error(dat1, dat2, er1, er2):
 	#want to find error of m+-dm/Tm+-dTm

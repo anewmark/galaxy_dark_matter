@@ -1,0 +1,106 @@
+print('Plotting Flagged/Not Flagged Luminosity Profiles')
+
+import astropy.table as table 
+import numpy as np
+from defcuts import *
+from def_get_mags import *
+from my_def_plots import *
+from defflags import *
+from defclump import meanlum
+import matplotlib.pyplot as plt
+
+indir='/Users/amandanewmark/repositories/galaxy_dark_matter/GAH/'
+
+outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/'
+
+datatab = table.Table.read(indir+ 'LOWZ_HSCGAMA15_apmgs+cmodmag.fits')
+
+bands=['g', 'r', 'i','z', 'y']
+
+parm=['flags_pixel_saturated_center','flags_pixel_edge','flags_pixel_interpolated_center','flags_pixel_cr_center','flags_pixel_suspect_center', 'flags_pixel_clipped_any','flags_pixel_bad']
+
+Flags=['flags_pixel_bright_object_center', 'No Flags', 'No Bright Ojbect Centers', 'Only Bright Object Centers', 'brobj_cen_flag']
+
+daperture=[1.01,1.51,2.02,3.02,4.03,5.71,8.40,11.8,16.8,23.5]
+
+aperture=[x*0.5 for x in daperture]
+
+ne=[99.99, 199.99, 0.0]
+
+mincut=0.1
+maxcut=''
+cutdata=not_cut(datatab, bands, 'mag_forced_cmodel', ne)
+
+for b in range(0, len(bands)-1):
+	newdata=many_flags(cutdata, parm, bands[b])	#flags not in y?
+	cutdata=newdata
+newdata=cutdata
+bandi=['i']
+Flagdat, Notdat,lab= TFflag(bandi,Flags, newdata)
+
+Naps=len(aperture)
+Flagredshifts=Flagdat['Z']
+Notredshifts=Notdat['Z']
+
+DMflag= get_zdistmod(Flagdat, 'Z')
+DMnot= get_zdistmod(Notdat, 'Z')
+
+kcorrectflag=get_kcorrect2(Flagdat,'mag_forced_cmodel', '_err', bands, '','hsc_filters.dat',Flagredshifts)
+kcorrectnot=get_kcorrect2(Notdat,'mag_forced_cmodel', '_err', bands, '','hsc_filters.dat',Notredshifts)
+
+Nflag=len(Flagdat)
+Nnot=len(Notdat)
+bigLIF=[]
+bigradF=[]
+cmodelIF=[]
+bigLIN=[]
+bigradN=[]
+
+fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
+for n in range(0, Nflag):
+	#this goes through every galaxy
+	kcorrect=kcorrectflag
+	data=Flagdat
+	redshifts=Flagredshifts
+	DM=DMflag
+	LG=[]
+	LR=[]
+	LI=[]
+	LZ=[]
+	LY=[]
+	string=str(n)
+	grays=str(.999-n*0.00015)
+	print('gray shade= ', grays)
+	radkpc=aper_and_comov(aperture, redshifts[n])
+	print('redshift is ', redshifts[n])
+	for a in range(0, Naps):
+		ns=str(a)
+		print('aperture0',ns, 'in galaxy #', string)
+		absg, absr, absi, absz, absy= abs_mag(data, 'mag_aperture0', kcorrect, DM[n], bands, ns, n) 
+		Lumg, Lumr, Lumi, Lumz, Lumy=abs2lum(absg, absr, absi, absz, absy)
+		Lg, Lr, Li, Lz, Ly=lumdensity(Lumg, Lumr, Lumi, Lumz, Lumy, radkpc[a])
+		LG.append(Lg)
+		LR.append(Lr)
+		LI.append(Li)
+		LZ.append(Lz)
+		LY.append(Ly)
+		#print('Li=', Li)
+		#break
+	#print('LI for ',n,' galaxy is ', LI)
+	bigLIF.append(LI)
+	bigradF.append(radkpc)
+	#ax0.plot(radkpc, LI, marker='.', color=grays, alpha=0.9)
+	#break
+bigLIF=np.array(bigLIF)
+
+bigradF=np.array(bigradF)
+bigLIF.flatten()
+print(bigLIF)
+
+bigradF.flatten()
+
+print('BIGF and bigradF length: ',len(bigLIF), len(bigradF))
+meanF, errorF, radavgF=meanlum(bigLIF, bigradF, Naps, outdir='',scale='log', error='stdv')
+ax0.plot(radavgF, meanF, marker='.', color='r')
+ax0.errorbar(radavgF, meanF, yerr=errorF, color='m', fmt='.')
+print('completed this: ')

@@ -117,9 +117,10 @@ def get_halflight(bigLIs, bigrads):
 			#print('Galaxy #', str(x))
 			#print('Luminosity= ', bigLIs[x])
 			#print('Radii= ', bigrads[x])
-	
-			half=math.log10(10**np.max(bigLIs[x])/2.0)
-			fhalf=halflight(bigrads[x],bigLIs[x])
+			rad=bigrads[x]
+			lum=bigLIs[x]
+			half=math.log10(10**np.max(lum)/2.0)
+			fhalf=halflight(rad,lum)
 			halfrad.append(fhalf)
 		halfrads=np.array(halfrad)
 	else:

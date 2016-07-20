@@ -2,7 +2,10 @@ def halflight(x, y):
 	from scipy import interpolate
 	import math
 	import numpy as np
+	
+	
 	f=interpolate.interp1d(y,x, kind='linear', axis=-1)
+	#f=interpolate.interp1d(y,x, kind='log', axis=-1)
 	half=math.log10(10**np.max(y)/2.0)
 	halfrad=f(half)
 	return halfrad

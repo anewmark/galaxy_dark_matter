@@ -1,32 +1,36 @@
 import astropy.table as table 
-#from defcuts import *
-import math
 import numpy as np
-from def_ages import *
-
 from defcuts import *
-from def_get_mags import *
-from def_clean import *
-from my_def_plots import *
 from defflags import *
-from defclump import * 
+from halflight_first import *
+from def_get_mags import *
+from def_halflight_math import *
+
+from def_ages import *
 
 ty='mean'
 
-tag=''
+stax=False
+if stax==False:
+	tag=''
+else:
+	tag='outcut'
 
-txtdist= 'Figure2'
-txtslope='Figure1'
+txtdist= ''
+txtslope=''
 
-outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/'+ty+tag
-doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/'+ty+tag
+outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/2'+ty+tag
+doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/2'+ty+tag
 
 indir='/Users/amandanewmark/repositories/galaxy_dark_matter/GAH/'
 	
 DATA=table.Table.read(indir+'med_vespa_LOWZ.fits')
+
+
 bands=['g', 'r', 'i','z', 'y']
 daperture=[1.01,1.51,2.02,3.02,4.03,5.71,8.40,11.8,16.8,23.5]
 aperture=[x*0.5 for x in daperture]
+
 def do_cuts(datatab):
 	parm=['flags_pixel_saturated_center','flags_pixel_edge','flags_pixel_interpolated_center','flags_pixel_cr_center','flags_pixel_suspect_center', 'flags_pixel_clipped_any','flags_pixel_bad']
 	ne=[99.99, 199.99, 0.0]
@@ -42,7 +46,6 @@ def do_cuts(datatab):
 	return newdata
 	
 DATA=do_cuts(DATA)
-
 
 def get_agebin_dat(Data, hm):
 	print('Running Age Bin')
@@ -74,75 +77,32 @@ starts2=datanot['AGESTART']
 data1=newdata[starts1==9.04]
 data2=datanot[starts2==9.04]
 
-print('After all of these cuts, there are ', len(data1), 'older galaxies left')
-print('After all of these cuts, there are ', len(data2), 'younger galaxies left')
-
 def my_halflight2(dat1):
-	lum1, rad1, lumd1= get_ind_lums(dat1, bands, aperture, scale='log')
+	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
 	
-	def upper_rad_cut(lum, rad, den): #this should get rid of galaxies outside 4r1/2
-		from def_mymath import halflight
-		nlum=[]
-		nrad=[]
-		nden=[]
-		mult=4
-		for x in range(len(rad)):
-			lums=lum[x]
-			rads=rad[x]
-			dens=den[x]
-			half=math.log10(10**np.max(lums)/2.0)
-			hhx=halflight(rads,lums)
-			
-			hhx10=10**hhx
-			hhx2s=mult*hhx10
-			hhx2=math.log10(hhx2s)
-			if np.max(rads) >= hhx2:
-				mx=rads[(rads>=hhx)&(rads<=hhx2)]
-				if len(mx)>=4:
-					nlum.append(lums)
-					nrad.append(rads)
-					nden.append(dens)
-				else:
-					print('not enough data points')
-			else:
-				print('Upper limit out of range')
-		nlum=np.array(nlum)
-		nrad=np.array(nrad)
-		nden=np.array(nden)
-		return nlum, nrad, nden
+	#loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
+	#print('length of radius array is ', len(lograd))
 	
-		#print(len(lum1))	
-	lum1, rad1, lumd1=upper_rad_cut(lum1, rad1, lumd1)
-		#print(len(lum1))
-		#print('Min rad= ', 10**np.min(rad1), 'max rad= ', 10**np.max(rad1))
+	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, type=ty, scale='lindata')
 	
-	mlum1, mdens1, mrad1, merr1= get_avg_lums(lum1, rad1, lumd1, type=ty)
+	logr12s= get_halflight(loglum, lograd)
 	
-	hrad1= get_halflight(lum1, rad1)
-	mhrad1= get_halflight(mlum1, mrad1)
+	logr12= get_halflight(mloglum, mlograd)
 	
-	test_half=''
-	if test_half=='go':
-		bs=np.linspace(0,1.2,num=10, endpoint=False)
-		plt.hist(hrad1,bins=bs, label='Total # Galaxies: '+str(len(hrad1)), color='red', alpha=0.9, zorder=2)
-		plt.axvline(mhrad1, color='blue',label='Stacked half-light radius', zorder=3)
-		plt.xlabel('Log10 Half-Light Radii')
-		plt.legend(loc=0,prop={'size':6.5})
-		plt.show()
+	Ms, cs, errs= get_slopes(logr12s, lograd, loglumd, error=None, smax=stax)
+	M, c, logrcut, logldcut, sterr, errcut =get_slopes(logr12, mlograd, mlogdens, error=mlogerr, smax=stax)
 	
-	m1s, c1s, err1s= get_slopes(lum1, hrad1, rad1, lumd1, error=None, names=None, smax=True)
-		
-	m1, c1, radcut1, dencut1, sterr1, errcut1 =get_slopes(mlum1, mhrad1, mrad1, mdens1, error=merr1, names=None, smax=False)
+	cutmlogld = M * logrcut + c
 	
-	ynew1 = m1 * radcut1 + c1
+	ind=[loglum, loglumd, lograd, logr12s]
+	means=[mloglum,mlogdens,mlograd,logr12, mlogerr]
+	ind_slope=[Ms, cs, errs]
+	mean_slopes=[M, c, logrcut, logldcut, cutmlogld, sterr, errcut]
+	#logrcut and logldcut are for lines of best fit
 	
-	inds=[lum1, lumd1, rad1, hrad1]
-	means=[mlum1,mdens1,mrad1,mhrad1, merr1]
-	ind_slope=[m1s, c1s, err1s]
-	mean_slopes=[m1, c1, radcut1, dencut1, ynew1,sterr1, errcut1]
+	return ind, means, ind_slope, mean_slopes
 	
-	return inds, means, ind_slope, mean_slopes
-
+	
 def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2):
 	
 	per=[str(hh*100), '%']
@@ -194,8 +154,8 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			M=m1s+m2s
 			import scipy
 			D, p=scipy.stats.ks_2samp(m1s,m2s)
-			plt.plot(0,0, c='green', marker='*', label='K-S test is '+str(D))
-			plt.xlim(np.min(M),-1.4)
+			plt.plot(0,0, c='green', marker='*', label='K-S test is '+str(np.round(D,3)))
+			plt.xlim(np.min(M),-1.3)
 			ts='KS'
 	
 		#print('Standard Deviation ('+tag1[2]+'): ', str(round(np.std(m1s),2)))
@@ -243,19 +203,23 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			plt.plot(rad1s[n], lum1s[n],color='lightgrey', marker='.')
 		for n in range(len(lum2s)):
 			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
-		plt.scatter(x1, y1, color='red', marker='o',label=tag1[0], zorder=3)
-		plt.scatter(x2,y2,color='blue', marker='o',label=tag2[0], zorder=3)
+		plt.scatter(x1, y1, color='red', marker='o',label='#'+tag1[1]+': '+ str(len(inds1[0])), zorder=3)
+		plt.scatter(x2,y2,color='blue', marker='o',label='#'+tag2[1]+': '+str(len(inds2[0])), zorder=3)
 		plt.xlabel('Log Radii (kpc)')
 		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
 		plt.title('Average Luminosity Densities v Radii')
 		plt.legend(loc=0,prop={'size':6.0})
-		plt.show()
+		#plt.show()
+		outdirs=outdir+tag+'allage_lumprof.pdf'
+		#plt.show()
+		f.savefig(outdirs)
+		print(outdirs)
 			
 	all_lumprof(inds1[1], inds2[1], inds1[2], inds2[2], means1[2], means2[2], means1[1], means2[1],means1[4], means2[4])
 	#slopevLmax(ind_slope1[0],ind_slope2[0], inds1[1], inds2[1])
-	#dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=False)
+	dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=False)
 	
-	#lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
+	lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
 	
 inds1, means1, ind_slope1, mean_slopes1=my_halflight2(data1)
 inds2, means2, ind_slope2, mean_slopes2=my_halflight2(data2)		

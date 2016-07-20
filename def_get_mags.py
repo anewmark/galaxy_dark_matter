@@ -88,7 +88,7 @@ def abs_mag(data, mag, kcorrect, DM, bands, aps, n):
 	return absg, absr, absi, absz, absy
 
 def abs2lum(absg, absr, absi, absz, absy):
-	print('Getting Luminosities in Solar Luminosities')
+	#print('Getting Luminosities in Solar Luminosities')
 	sung = 5.07487
 	sunr = 4.64305
 	suni = 4.52725

@@ -14,11 +14,11 @@ aperture=[x*0.5 for x in daperture]
 
 ty='mean'
 
-stax=False
+stax=True
 if stax==False:
 	tag=''
 else:
-	tag='outcut'
+	tag='uplim'
 txtdist= 'Figure2'
 txtslope='Figure1'
 
@@ -51,7 +51,8 @@ Flagdat, Notdat=get_TF(newdata)
 def my_halflight2(dat1):
 	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
 	
-	#loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
+	if stax==True:
+		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
 	#print('length of radius array is ', len(lograd))
 	
 	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, type=ty, scale='lindata')
@@ -137,7 +138,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.title('With '+ty+' Slopes')
 	
 		outdirs=doutdir+'slopedist.pdf'
-		figs.text(0.03, 0.03, txtdist, color='red', weight='bold')
+		#figs.text(0.03, 0.03, txtdist, color='red', weight='bold')
 		#plt.show()
 		figs.savefig(outdirs)
 		print(outdirs)

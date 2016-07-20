@@ -10,11 +10,11 @@ from def_ages import *
 
 ty='mean'
 
-stax=False
+stax=True
 if stax==False:
 	tag=''
 else:
-	tag='outcut'
+	tag='uplim'
 
 txtdist= ''
 txtslope=''
@@ -79,8 +79,8 @@ data2=datanot[starts2==9.04]
 
 def my_halflight2(dat1):
 	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
-	
-	#loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
+	if stax==True:
+		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
 	#print('length of radius array is ', len(lograd))
 	
 	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, type=ty, scale='lindata')
@@ -135,7 +135,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
 		plt.title('Average Luminosity Densities v Radii')
 		plt.legend(loc=0,prop={'size':6.0})
-		f.text(0.05, 0.05, txtslope, color='red', weight='bold')
+		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
 		outdirs=outdir+'lumage.pdf'
 		#plt.show()
 		f.savefig(outdirs)

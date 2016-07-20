@@ -9,7 +9,7 @@ def meanlum2(logdatarr, lograds, Naps, scale=''):
 	print(lograds)
 	rads=10**lograds
 	print('min= ', np.min(rads), 'max= ', np.max(rads))
-	#rads=np.array(rads)
+	
 	if scale=='lindata':
 		datarr=10**logdatarr
 	else:
@@ -30,7 +30,7 @@ def meanlum2(logdatarr, lograds, Naps, scale=''):
 
 	print('hist1', hist1)
 	print('hist2', hist2)
-	print('Mean= ', means)
+	
 	
 	bin_centers = 2.*(radhists[1:]**3 - radhists[:-1]**3)/(3.*(radhists[1:]**2 - radhists[:-1]**2))
 		
@@ -38,6 +38,7 @@ def meanlum2(logdatarr, lograds, Naps, scale=''):
 		logmeans=means
 		means=np.log10(np.array(logmeans))
 	logbin_centers=np.log10(np.array(bin_centers))
+	print('Mean= ', means)
 	print('log bincenters= ',logbin_centers)
 	return means, logbin_centers, bb
 	

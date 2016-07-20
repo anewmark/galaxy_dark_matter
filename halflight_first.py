@@ -1,12 +1,11 @@
 import numpy as np
 from def_get_mags import get_zdistmod, get_kcorrect2, aper_and_comov, abs2lum, lumdensity, abs_mag
-
+from scipy import interpolate
 import math
 from halflight_second import meanlum2, get_errors
 from def_halflight_math import get_halfrad
 
-
-def upper_rad_cut(loglum, lograd, logden, m, proof=False): #this should get rid of galaxies outside 4r1/2
+def upper_rad_cut(loglum, lograd, logden, m, proof=False):
 	from def_halflight_math import get_halfrad
 	nloglum=[]
 	nlograd=[]
@@ -18,26 +17,34 @@ def upper_rad_cut(loglum, lograd, logden, m, proof=False): #this should get rid 
 		loglums=loglum[n]
 		lograds=lograd[n]
 		logdens=logden[n]
-		logr12=get_halfrad(lograds,loglums)
+		maxL=10**np.max(loglums)
+		halfL=maxL/2
+		logL12=np.log10(halfL)
+		f=interpolate.interp1d(loglums,lograds, kind='linear', axis=-1)
+		logr12=f(logL12)
 		r12=10**logr12
 		r412=mult*r12
-		logr412=np.log10(r412)
+		logr412=np.log10(r412) #the upper limit
 		if proof == True:
 			print('logr1/2= ', logr12)
 			print('log4r1/2= ', logr412)
 			print('The radii are ', lograds)
 		print(logr412)
 		if np.max(lograds) >= logr412:
-			logradi=lograds[(lograds>=logr412)&(lograds<=logr412)]
-			print(logradi)
-			if len(logradi)>=3:
+			logrcut=lograds[(lograds>=logr12)&(lograds<=logr412)]
+			#logrcut=lograds[(lograds>=logr12)&(lograds<=logr412)]
+			if proof == True:
+				print('Cut Radius range= ', logrcut)
+			if len(logrcut)>=4:
 				nloglum.append(loglums)
 				nlograd.append(lograds)
 				nlogden.append(logdens)
+				print('good')
 			else:
 				print('not enough data points')
 		else:
 			print('Upper limit out of range')
+		#break
 	nloglum=np.array(nloglum)
 	nlograd=np.array(nlograd)
 	nlogden=np.array(nlogden)
@@ -197,6 +204,7 @@ def get_slopes(logr12s, lograd, logld, error=None, smax=False):
 					mlogld=logldrow[(logrrow>=logr12)&(logrrow<=logr412)]
 					merr=errow[(logrrow>=logr12)&(logrrow<=logr412)]
 					if len(mlogr) >=4:
+						#print('check=good')
 						logrcut.append(mlogr)
 						logldcut.append(mlogld)
 						errcut.append(merr)
@@ -207,6 +215,7 @@ def get_slopes(logr12s, lograd, logld, error=None, smax=False):
 				mlogr=logrrow[logrrow>=logr12]
 				mlogld=logldrow[logrrow>=logr12]
 				if len(mlogr) >=4:
+					print('good')
 					logrcut.append(mlogr)
 					logldcut.append(mlogld)
 					errcut.append(merr)
@@ -221,6 +230,7 @@ def get_slopes(logr12s, lograd, logld, error=None, smax=False):
 		return slopes, intercepts, errs
 	else: #for arrays of 1D *aka* the stacked profile
 		lograd=np.array(lograd)
+		logr12=logr12s
 		print('r1/2 limit is ', logr12s)
 		print('xrange for stacked is ', lograd)
 		if error is None:
@@ -237,11 +247,11 @@ def get_slopes(logr12s, lograd, logld, error=None, smax=False):
 				logldcut=logld[(lograd>=logr12)&(lograd<=logr412)]
 				errcut=error[(lograd>=logr12)&(lograd<=logr412)]
 		else:
-			logrcut=lograd[lograd>=logr12s]
-			logldcut=logld[lograd>=logr12s]
-			errcut=error[lograd>=logr12s]
+			logrcut=lograd[lograd>=logr12]
+			logldcut=logld[lograd>=logr12]
+			errcut=error[lograd>=logr12]
 		print('Log Radii are= ', lograd)
-		print('LogR1/2 is= ', logr12s)
+		print('LogR1/2 is= ', logr12)
 		
 		sl3, C3, std_err3=my_linregress3(logrcut, logldcut, errcut)
 		

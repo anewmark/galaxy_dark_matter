@@ -13,6 +13,7 @@ daperture=[1.01,1.51,2.02,3.02,4.03,5.71,8.40,11.8,16.8,23.5]
 aperture=[x*0.5 for x in daperture]
 
 ty='mean'
+#ty='med'
 
 stax=True
 if stax==False:
@@ -56,7 +57,7 @@ def my_halflights(dat1):
 		lum, rad, ld= upper_rad_cut(lum, rad, ld, 4, proof=False)
 	
 	#print('min radius in lin= ', np.min(rad), 'max radius in lin= ', np.max(rad))
-	binrange=[2.2,65,11]
+	binrange=[2.2,65,10]
 	#Flagdat #points in each bin: [592 733 655 717 732 640 667 681 697 610]
 	#Notdat #points in each bin:[177 163 187 183 169 165 170 169 185  94]
 	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)

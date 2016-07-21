@@ -233,8 +233,8 @@ inds2, means2, ind_slope2, mean_slopes2=my_halflight2(data2)
 		
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2)
 
-test=''
-if test=='flagged':
+flagtest=''
+if flagtest':
 	Flag1=['flags_pixel_bright_object_center', 'brobj_cen_flag-', 'No Bright Ojbect Centers', 'Only Bright Object Centers', 'brobj_cen_flag']
 	
 	Flag2=['flags_pixel_bright_object_any', 'brobj_all_flag-', 'No Bright Ojbects', 'Only Bright Objects', 'brobj_all_flag']

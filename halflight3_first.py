@@ -3,7 +3,7 @@ from def_get_mags import get_zdistmod, get_kcorrect2, aper_and_comov, abs2lum, l
 from scipy import interpolate
 import math
 import matplotlib.pyplot as plt
-from halflight3_second import meanlum2, get_errors
+from halflight3_second import meanlum2, get_errors, medlum2
 from def_halflight_math import get_halfrad
 
 def get_ind_lums(newdata, bands, aperture, scale=''):
@@ -64,7 +64,6 @@ def get_ind_lums(newdata, bands, aperture, scale=''):
 	lumdensi=np.array(bigden)
 	return bigLIs, bigrads, lumdensi
 	
-	
 def upper_rad_cut(lum, rad, den, m, proof=False):
 	from def_halflight_math import get_halfrad #This is done linearly, so we dont have to do much
 	print('this is from halflight3')
@@ -109,31 +108,46 @@ def get_avg_lums(Ls, rads, LDs, gr=[], type=''):
 	Naps=0.0
 	
 	if type=='mean':
-		meanlum, radavg, bb=meanlum2(Ls, rads, Naps,grange=gr)
-		meandens, radavg, bb=meanlum2(LDs, rads, Naps,grange=gr)
+		avglum, radavg, bb=meanlum2(Ls, rads, Naps,grange=gr)
+		avgdens, radavg, bb=meanlum2(LDs, rads, Naps,grange=gr)
+		
+		err='bootstrap_stdv'
+		logdenerr=get_errors(LDs, rads, bb, avgdens, error=err)
+	
+		print('Mean Luminosity= ', avglum)
+		print('Mean LumDensity=', avgdens)
+		print('Binned Radii= ', radavg)
+		print('Standard Deviation (in log)= ', logdenerr)
+
+		
+	if type=='med':
+		print('getting median')
+		avglum, radavg, bb=medlum2(Ls, rads, Naps,grange=gr)
+		avgdens, radavg, bb=medlum2(LDs, rads, Naps,grange=gr)
 	
 		err='bootstrap_stdv'
-		logdenerr=get_errors(LDs, rads, bb, meandens, error=err)
+		logdenerr=get_errors(LDs, rads, bb, avgdens, error=err)
 	
-		print('Mean Luminosity= ', meanlum)
-		print('Mean LumDensity=', meandens)
+		print('Median Luminosity= ', avglum)
+		print('Median LumDensity=', avgdens)
 		print('Binned Radii= ', radavg)
 		print('Standard Deviation (in log)= ', logdenerr)
 		#hi=hi
 		
-		errtest=''
-		if errtest:
-			print(len(LDs))
-			print('log of meandens= ', np.log10(meandens))
-			print('log of radavg= ', np.log10(radavg))
-			for n in range(len(LDs)):
-				plt.plot(np.log10(rads[n]), np.log10(LDs[n]), color='lightgrey', marker='.', zorder=1)
-			plt.scatter(np.log10(radavg), np.log10(meandens), zorder=2, color='red', marker='o')
-			plt.errorbar(np.log10(radavg), np.log10(meandens), yerr=logdenerr, zorder=4, color='red')
-			plt.xlabel('Log Radii')
-			plt.ylabel('Log Luminosity Density')
-			plt.show()
-		return meanlum, meandens, radavg, logdenerr #outputs logmeans and log mean_er
+	errtest='' #this testplots error bars amongst individual galaxies
+	if errtest:
+		print(len(LDs))
+		print('log of ',type ,' lumdens= ', np.log10(avgdens))
+		print('log of radavg= ', np.log10(radavg))
+		for n in range(len(LDs)):
+			plt.plot(np.log10(rads[n]), np.log10(LDs[n]), color='lightgrey', marker='.', zorder=1)
+		plt.scatter(np.log10(radavg), np.log10(avgdens), zorder=2, color='red', marker='o')
+		plt.errorbar(np.log10(radavg), np.log10(avgdens), yerr=logdenerr, zorder=4, color='red')
+		plt.xlabel('Log Radii')
+		plt.ylabel('Log Luminosity Density')
+		plt.title(type)
+		plt.show()
+	return avglum, avgdens, radavg, logdenerr #outputs logmeans and log mean_er
 		
 def get_halflight2(Ls, rads, mult=4):
 	import math

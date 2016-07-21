@@ -26,7 +26,7 @@ def meanlum2(lumden, rads, Naps, grange=[]):
 	except:
 		ns=11
 		
-	bb=np.logspace(math.log10(radmin), math.log10(radmax),num=ns, endpoint=True)
+	bb=np.logspace(math.log10(radmin), math.log10(radmax),num=ns, endpoint=False)
 	
 	print('bb= ',bb)
 	Naps=len(bb)
@@ -58,10 +58,10 @@ def meanlum2(lumden, rads, Naps, grange=[]):
 		plt.scatter(np.log10(bin_centers), np.log10(means), zorder=2, color='red', marker='o')
 		plt.xlabel('Log Radii')
 		plt.ylabel('Log Luminosity/Density')
+		plt.title('Mean')
 		plt.show()
 		
 	return means, bin_centers, bb
-	
 	
 def get_errors(lumden, rads, bb, meanL, error=''):
 	import numpy as np
@@ -110,3 +110,57 @@ def get_errors(lumden, rads, bb, meanL, error=''):
 
 	else:
 		print('hi')
+
+def medlum2(lumden, rads, Naps, grange=[]):
+	import numpy as np
+	import math
+	import scipy.stats as stats
+	import matplotlib.pyplot as plt
+	Naps=0.0
+	#since in log scale
+	#rads in 10logspace
+	print('Getting median!')
+	print('Regular Rads Check of one row: ', rads[0])
+	
+	print('min= ', np.min(rads), 'max= ', np.max(rads))
+	
+	print('regular lumdens= ', lumden[0])
+	
+	try:
+		radmin=grange[0]
+	except:
+		radmin=1 ###### <======== change this one occasionally
+	try:
+		radmax=grange[1]
+	except:
+		radmax=80
+	try:
+		ns=grange[2]
+	except:
+		ns=10
+	
+	bb=np.logspace(math.log10(radmin), math.log10(radmax),num=ns, endpoint=False)
+	rads=rads.flatten()
+	lumden=lumden.flatten()
+	
+	print(np.ndim(rads), np.ndim(lumden))
+	
+	medarr, radhists, ind=stats.binned_statistic(rads, lumden, statistic='median', bins=bb)
+		
+	bin_centers = 2.*(radhists[1:]**3 - radhists[:-1]**3)/(3.*(radhists[1:]**2 - radhists[:-1]**2))
+	
+	bintest=''
+	if bintest:
+		print(len(lumden))
+		print('log of median= ', np.log10(medarr))
+		print('log of bincenters= ', np.log10(bin_centers))
+
+		for n in range(len(lumden)):
+			plt.plot(np.log10(rads[n]), np.log10(lumden[n]), color='lightgrey', marker='.', zorder=1)
+		plt.scatter(np.log10(bin_centers), np.log10(medarr), zorder=2, color='red', marker='o')
+		plt.xlabel('Log Radii')
+		plt.ylabel('Log Luminosity/Density')
+		plt.title('Median')
+		plt.show()
+	
+	return medarr, bin_centers, bb

@@ -79,18 +79,28 @@ data2=datanot[starts2==9.04]
 
 def my_halflight2(dat1):
 	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
+	
 	if stax==True:
+		print('hi')
 		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
 	#print('length of radius array is ', len(lograd))
 	
-	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, type=ty, scale='lindata')
+	logr12s, logr412s= get_halflight2(loglum, lograd, 4)
+	print('min radius in lin= ', np.min(10**lograd), 'max radius in lin= ', np.max(10**lograd))
+	print('min r1/2 is ', np.min(10**logr12s),'max 4r1/2 is ', np.max(10**logr412s))
 	
-	logr12s= get_halflight(loglum, lograd)
+	#mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[0.7,71,11], type=ty, scale='lindata')
+	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[0.7,71,11], type=ty, scale='lindata')
 	
-	logr12= get_halflight(mloglum, mlograd)
+	logr12s, logr412s= get_halflight2(loglum, lograd, 4)
 	
-	Ms, cs, errs= get_slopes(logr12s, lograd, loglumd, error=None, smax=stax)
-	M, c, logrcut, logldcut, sterr, errcut =get_slopes(logr12, mlograd, mlogdens, error=mlogerr, smax=stax)
+	logr12, logr412= get_halflight2(mloglum, mlograd, 4)
+	
+	#for n in range(len(logr12s)):
+	#	print(np.round(logr12s[n],3), np.round(logr412s[n],3), 'lograd= ', np.round(lograd[n],3))
+	
+	Ms, cs, errs= get_slopes1(logr12s, logr412s,lograd, loglumd, error=None, smax=stax)
+	M, c, logrcut, logldcut, sterr, errcut =get_slopes1(logr12, logr412, mlograd, mlogdens, error=mlogerr, smax=stax)
 	
 	cutmlogld = M * logrcut + c
 	
@@ -110,11 +120,8 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 	tag1=['Number of Galaxies= '+str(len(inds1[0])), 'Galaxies w/ Mass Fractions >'+per,'Mass Fractions > '+per]
 	tag2=['Number of Galaxies= '+str(len(inds2[0])), 'Galaxies w/ Mass Fractions <'+per,'Mass Fractions < '+per]
 	#inds=[lum1, lumd1, rad1, hrad1]
-	
 	#means=[mlum1,mdens1,mrad1,mhrad1, merr1]
-	
 	#ind_slope=[m1s, c1s, err1s]
-	
 	#mean_slopes=[m1, c1, radcut1, dencut1, ynew1,sterr1, errcut1]
 	
 	def lum_mult_fit(x1, x2, y1, y2, xcut1, xcut2, yfit1, yfit2, sterr1, sterr2 , m1, m2, error1, error2, outdir=''):
@@ -210,7 +217,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.title('Average Luminosity Densities v Radii')
 		plt.legend(loc=0,prop={'size':6.0})
 		#plt.show()
-		outdirs=outdir+tag+'allage_lumprof.pdf'
+		outdirs=outdir+'allage_lumprof.pdf'
 		#plt.show()
 		f.savefig(outdirs)
 		print(outdirs)
@@ -244,3 +251,41 @@ if test=='flagged':
 	print('Bright Object Centers in younger= ', len(flag2))
 	print('Bright Objects in younger= ', len(flag4))
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+#not in use currently	
+def my_halflight(dat1):
+	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
+	if stax==True:
+		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
+	#print('length of radius array is ', len(lograd))
+	
+	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[1,80,11],type=ty, scale='lindata')
+	
+	logr12s= get_halflight(loglum, lograd)
+	
+	logr12= get_halflight(mloglum, mlograd)
+	
+	Ms, cs, errs= get_slopes(logr12s, lograd, loglumd, error=None, smax=stax)
+	M, c, logrcut, logldcut, sterr, errcut =get_slopes(logr12, mlograd, mlogdens, error=mlogerr, smax=stax)
+	
+	cutmlogld = M * logrcut + c
+	
+	ind=[loglum, loglumd, lograd, logr12s]
+	means=[mloglum,mlogdens,mlograd,logr12, mlogerr]
+	ind_slope=[Ms, cs, errs]
+	mean_slopes=[M, c, logrcut, logldcut, cutmlogld, sterr, errcut]
+	#logrcut and logldcut are for lines of best fit
+	
+	return ind, means, ind_slope, mean_slopes

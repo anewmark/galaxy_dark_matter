@@ -1,4 +1,4 @@
-def meanlum2(logdatarr, lograds, Naps, scale=''):
+def meanlum2(logdatarr, lograds, Naps, grange=[], scale=''):
 	import numpy as np
 	import math
 	import matplotlib.pyplot as plt
@@ -6,18 +6,36 @@ def meanlum2(logdatarr, lograds, Naps, scale=''):
 	import scipy.stats as stats
 	#import as 1D clumps
 	print('this is from half-light second')
-	print(lograds)
+	
+	print('Log Rads: ', lograds[0])
 	rads=10**lograds
+	print('Regular Rads: ', rads[0])
+	
 	print('min= ', np.min(rads), 'max= ', np.max(rads))
 	
 	if scale=='lindata':
+		print('loglumdens= ', logdatarr[0])
 		datarr=10**logdatarr
+		
 	else:
 		datarr=logdatarr
 	
-	radmin=1 ###### <======== change this one occasionally
-	radmax=80
-	bb=np.logspace(math.log10(radmin), math.log10(radmax),num=11, endpoint=True)
+	print('regular lumdens= ', datarr[0])
+	
+	try:
+		radmin=grange[0]
+	except:
+		radmin=1 ###### <======== change this one occasionally
+	try:
+		radmax=grange[1]
+	except:
+		radmax=80
+	try:
+		ns=grange[2]
+	except:
+		ns=11
+		
+	bb=np.logspace(math.log10(radmin), math.log10(radmax),num=ns, endpoint=True)
 	print('bb= ',bb)
 	Naps=len(bb)
 
@@ -35,14 +53,15 @@ def meanlum2(logdatarr, lograds, Naps, scale=''):
 	bin_centers = 2.*(radhists[1:]**3 - radhists[:-1]**3)/(3.*(radhists[1:]**2 - radhists[:-1]**2))
 		
 	if scale=='lindata':
-		logmeans=means
-		means=np.log10(np.array(logmeans))
+		logmeans=np.log10(np.array(means))
+		means=logmeans
+		
 	logbin_centers=np.log10(np.array(bin_centers))
 	print('Mean= ', means)
 	print('log bincenters= ',logbin_centers)
 	return means, logbin_centers, bb
 	
-def get_errors(logdatarr, lograds, bb, error='', scale=''):
+def get_errors(logdatarr, lograds, bb, meanL, error='', scale=''):
 	import numpy as np
 	import math
 	import matplotlib.pyplot as plt
@@ -80,7 +99,9 @@ def get_errors(logdatarr, lograds, bb, error='', scale=''):
 			
 		error=np.std(Means, axis=0)
 		if scale=='lindata':
-			error=np.std(np.log10(Means), axis=0)
+			meanL=10**meanL
+			sigma=np.std(Means, axis=0)
+			error=sigma/meanL
 		return  error
 
 	else:

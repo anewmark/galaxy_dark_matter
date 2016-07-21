@@ -17,13 +17,11 @@ def upper_rad_cut(loglum, lograd, logden, m, proof=False):
 		loglums=loglum[n]
 		lograds=lograd[n]
 		logdens=logden[n]
-		maxL=10**np.max(loglums)
-		halfL=maxL/2
-		logL12=np.log10(halfL)
-		f=interpolate.interp1d(loglums,lograds, kind='linear', axis=-1)
-		logr12=f(logL12)
-		r12=10**logr12
+		L=10**loglums
+		R=10**lograds
+		r12=get_halfrad(R, L)
 		r412=mult*r12
+		logr12=np.log10(r12)
 		logr412=np.log10(r412) #the upper limit
 		if proof == True:
 			print('logr1/2= ', logr12)
@@ -107,25 +105,25 @@ def get_ind_lums(newdata, bands, aperture, scale=''):
 	lumdensi=np.array(bigden)
 	return bigLIs, bigrads, lumdensi
 	
-def get_avg_lums(logLs, lograds, logLDs, type='', scale=''):
+def get_avg_lums(logLs, lograds, logLDs, gr=[], type='', scale=''):
 	print('get_avg_lums is in halflight first')
 	sc=scale
 	#sc is whether or nto we stack the linear data or log data
 	Naps=0.0
 	
 	if type=='mean':
-		meanlum, radavg, bb=meanlum2(logLs, lograds, Naps,scale=sc)
-		meandens, radavg, bb=meanlum2(logLDs, lograds,Naps,scale=sc)
+		meanlum, radavg, bb=meanlum2(logLs, lograds, Naps,grange=gr,scale=sc)
+		meandens, radavg, bb=meanlum2(logLDs, lograds,Naps,grange=gr,scale=sc)
 	
 		err='bootstrap_stdv'
-		lumdenerr=get_errors(logLDs, lograds, bb, error=err, scale=sc)
+		lumdenerr=get_errors(logLDs, lograds, bb, meandens, error=err, scale=sc)
 	
 		print('Mean Luminosity= ', meanlum)
 		print('Mean LumDensity=', meandens)
 		print('Binned Radii= ', radavg)
 		print('Standard Deviation= ', lumdenerr)
 	
-		return meanlum, meandens, radavg, lumdenerr
+		return meanlum, meandens, radavg, lumdenerr #outputs logmeans and log mean_errors
 		
 	if type== 'median':
 		medlum, radavg, bb=medlum2(bigLIs, bigrads)
@@ -151,11 +149,13 @@ def get_halflight(logLs, lograds):
 		for n in range(0, len(lograds)):
 			logL=logLs[n]
 			logr=lograds[n]
-			maxL=10**np.max(logL)
+			L=10**logL
+			R=10**logr
+			maxL=np.max(L)
 			halfL=maxL/2
-			logL12=np.log10(halfL)
-			f=interpolate.interp1d(logL,logr, kind='linear', axis=-1)
-			alogr12=f(logL12)
+			f=interpolate.interp1d(L,R, kind='linear', axis=-1)
+			r12=f(halfL)
+			alogr12=np.log10(r12)
 			logr12.append(alogr12)
 		logr12=np.array(logr12)
 	else:
@@ -168,6 +168,37 @@ def get_halflight(logLs, lograds):
 		logr12=f(logL12)
 		
 	return logr12
+	
+def get_halflight2(logLs, lograds, mult):
+	import math
+	import numpy as np
+	print('not from halflight_math')
+	N=np.ndim(lograds)
+	if N==2:
+		logr12=[]
+		logr412=[]
+		for n in range(0, len(lograds)):
+			logL=logLs[n]
+			logr=lograds[n]
+			L=10**logL
+			R=10**logr
+			r12=get_halfrad(R, L)
+			r412=r12*mult
+			alogr12=np.log10(r12)
+			alogr412=np.log10(r412)
+			logr12.append(alogr12)
+			logr412.append(alogr412)
+		logr12=np.array(logr12)
+		logr412=np.array(logr412)
+	else:
+		L=10**logLs
+		R=10**lograds
+		r12=get_halfrad(R, L)
+		r412=r12*mult
+		logr12=np.log10(r12)
+		logr412=np.log10(r412)
+		
+	return logr12, logr412
 		
 def get_slopes(logr12s, lograd, logld, error=None, smax=False):
 	import scipy.stats as stats
@@ -239,6 +270,88 @@ def get_slopes(logr12s, lograd, logld, error=None, smax=False):
 			r12=10**logr12
 			r412=mult*r12
 			logr412=np.log10(r412)
+			print('upper limit is ', logr412)
+			if np.max(lograd) <= logr412:
+				print('Upper cut is out of the Radius range')
+			else:
+				logrcut=lograd[(lograd>=logr12)&(lograd<=logr412)]
+				logldcut=logld[(lograd>=logr12)&(lograd<=logr412)]
+				errcut=error[(lograd>=logr12)&(lograd<=logr412)]
+		else:
+			logrcut=lograd[lograd>=logr12]
+			logldcut=logld[lograd>=logr12]
+			errcut=error[lograd>=logr12]
+		print('Log Radii are= ', lograd)
+		print('LogR1/2 is= ', logr12)
+		
+		sl3, C3, std_err3=my_linregress3(logrcut, logldcut, errcut)
+		
+		return sl3, C3, logrcut, logldcut, std_err3, errcut
+		
+def get_slopes1(logr12s, logr412s, lograd, logld, error=None, smax=False):
+	import scipy.stats as stats
+	from def_halflight_math import my_linregress3
+	from my_def_plots import scatter_fit, simple_hist
+	print('slopes from halflight_first')
+	mult=4
+	Ndim=np.ndim(lograd)
+	N=len(lograd)
+	if error is None:
+		print('No error was given')
+		error=np.ones((N, len(lograd[0])))
+
+	N=np.ndim(lograd)
+	
+	logrcut=[]
+	logldcut=[]
+	errcut=[]
+	if N==2:
+		for i in range(len(lograd)):
+			logrrow=lograd[i]
+			logldrow=logld[i]
+			errow=error[i]
+			logr12=logr12s[i]
+			logr412=logr412s[i]
+			
+			if smax== True:
+				if np.max(logrrow) >= logr412:
+					mlogr=logrrow[(logrrow>=logr12)&(logrrow<=logr412)]
+					mlogld=logldrow[(logrrow>=logr12)&(logrrow<=logr412)]
+					merr=errow[(logrrow>=logr12)&(logrrow<=logr412)]
+					if len(mlogr) >=4:
+						#print('check=good')
+						logrcut.append(mlogr)
+						logldcut.append(mlogld)
+						errcut.append(merr)
+				else:
+					print('Upper Cut is Out of the Radius Range')
+			else:
+				merr=errow[logrrow>=logr12]
+				mlogr=logrrow[logrrow>=logr12]
+				mlogld=logldrow[logrrow>=logr12]
+				if len(mlogr) >=4:
+					print('good')
+					logrcut.append(mlogr)
+					logldcut.append(mlogld)
+					errcut.append(merr)
+		slopes=[]
+		intercepts=[]
+		errs=[]
+		for n in range(len(logrcut)):
+			slope, int, std_err=my_linregress3(logrcut[n], logldcut[n], errcut[n])
+			slopes.append(slope)
+			intercepts.append(int)
+			errs.append(std_err)
+		return slopes, intercepts, errs
+	else: #for arrays of 1D *aka* the stacked profile
+		lograd=np.array(lograd)
+		logr12=logr12s
+		logr412=logr412s
+		print('r1/2 limit is ', logr12s)
+		print('xrange for stacked is ', lograd)
+		if error is None:
+			error=np.ones(N)
+		if smax== True:
 			print('upper limit is ', logr412)
 			if np.max(lograd) <= logr412:
 				print('Upper cut is out of the Radius range')

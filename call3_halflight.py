@@ -1,10 +1,10 @@
-print('Finding Half Light Radii and Corresponding Slopes of Stacked Galaxies')
-
+print('doing this linearly this time!')
 import astropy.table as table 
 import numpy as np
 from defcuts import *
 from defflags import *
-from halflight_first import *
+import matplotlib.pyplot as plt
+from halflight3_first import *
 from def_get_mags import *
 from def_halflight_math import *
 
@@ -22,8 +22,8 @@ else:
 txtdist= 'Figure2'
 txtslope='Figure1'
 
-outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/2'+ty+tag
-doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/2'+ty+tag
+outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/3'+ty+tag
+doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/3'+ty+tag
 Flags=['flags_pixel_bright_object_center', 'brobj_cen_flag-', 'No Bright Ojbect Centers', 'Only Bright Object Centers', 'brobj_cen_flag']
 
 indir='/Users/amandanewmark/repositories/galaxy_dark_matter/GAH/'
@@ -45,107 +45,84 @@ def get_TF(data):
 	return Flag, Not	
 	
 newdata=do_cuts(bigdata)
-
 Flagdat, Notdat=get_TF(newdata)
-
-def my_halflight2(dat1):
-	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
-	
-	if stax==True:
-		print('hi')
-		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
-	#print('length of radius array is ', len(lograd))
-	
-	
-	print('min radius in lin= ', np.min(10**lograd), 'max radius in lin= ', np.max(10**lograd))
-	
-	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[1,80,11], type=ty, scale='lindata')
-	#mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[1,80,11], type=ty, scale='lindata') #for min, max rad data
-	
-	logr12s, logr412s= get_halflight2(loglum, lograd, 4)
-	
-	logr12, logr412= get_halflight2(mloglum, mlograd, 4)
-	
-	print('min r1/2 is ', np.min(10**logr12s),'max 4r1/2 is ', np.max(10**logr412s))
-	print('min stackr1/2 is ', 10**logr12,'max stack4r1/2 is ', 10**logr412)
-	test='fml'
-	if test=='fml':
-		import matplotlib.pyplot as plt
-		plt.hist(10**logr12s, 10,color='green', alpha=.8, label= 'r1/2')
-		plt.hist(10**logr412s,10, color='blue', alpha=.8, label= '4r1/2')
-		plt.axvline(10**logr12, color='magenta', label='stacked r1/2')
-		plt.axvline(10**logr412, color='cyan', label='stacked 4r1/2')
-		plt.xlabel('Radii (kpc)', fontsize=10)
-		plt.legend(loc=0,prop={'size':6.5})
-		plt.show()
-	
-	#for n in range(len(logr12s)):
-	#	print(np.round(logr12s[n],3), np.round(logr412s[n],3), 'lograd= ', np.round(lograd[n],3))
-	
-	Ms, cs, errs= get_slopes1(logr12s, logr412s,lograd, loglumd, error=None, smax=stax)
-	M, c, logrcut, logldcut, sterr, errcut =get_slopes1(logr12, logr412, mlograd, mlogdens, error=mlogerr, smax=stax)
-	
-	cutmlogld = M * logrcut + c
-	
-	ind=[loglum, loglumd, lograd, logr12s]
-	means=[mloglum,mlogdens,mlograd,logr12, mlogerr]
-	ind_slope=[Ms, cs, errs]
-	mean_slopes=[M, c, logrcut, logldcut, cutmlogld, sterr, errcut]
-	#logrcut and logldcut are for lines of best fit
-	
-	return ind, means, ind_slope, mean_slopes #preferred way
+Notdat=Notdat[Notdat['Z']>0.2]   ## WANT X ZCUT FOR NOTDAT ONLY
 
 def my_halflights(dat1):
-	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
-	
+	lum, rad, ld= get_ind_lums(dat1, bands, aperture, scale='linear')
+	#print(lum[0], rad[0], lumd[0]) #this confirms it is all linear
 	if stax==True:
-		print('hi')
-		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
-	#print('length of radius array is ', len(lograd))
+		print('stax is true and doing upper cut now')
+		lum, rad, ld= upper_rad_cut(lum, rad, ld, 4, proof=False)
 	
+	#print('min radius in lin= ', np.min(rad), 'max radius in lin= ', np.max(rad))
+	binrange=[2.2,65,11]
+	#Flagdat #points in each bin: [592 733 655 717 732 640 667 681 697 610]
+	#Notdat #points in each bin:[177 163 187 183 169 165 170 169 185  94]
+	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
+	r12s, r412s= get_halflight2(lum, rad, mult=4)
+	r12, r412= get_halflight2(mlum, mrad, mult=4)
 	
-	print('min radius in lin= ', np.min(10**lograd), 'max radius in lin= ', np.max(10**lograd))
-	
-	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[1,78,11], type=ty, scale='lindata')
-	#mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[1,80,11], type=ty, scale='lindata') #for min, max rad data
-	
-	#print(loglum[0], lograd[0])
-	
-	logr12s, logr412s= get_halflight2(loglum, lograd, 4)
-	
-	logr12, logr412= get_halflight2(mloglum, mlograd, 4)
-	
-	test='fml'
-	if test=='fml':
+	halftest=''
+	if halftest:
 		import matplotlib.pyplot as plt
-		plt.hist(10**logr12s, 10,color='green', alpha=.8, label= 'r1/2')
-		plt.hist(10**logr412s,10, color='blue', alpha=.8, label= '4r1/2')
-		plt.axvline(10**logr12, color='magenta', label='stacked r1/2')
-		plt.axvline(10**logr412, color='cyan', label='stacked 4r1/2')
+		plt.hist(r12s, 10,color='green', alpha=.8, label= 'r1/2')
+		plt.hist(r412s,10, color='blue', alpha=.8, label= '4r1/2')
+		plt.axvline(r12, color='magenta', label='stacked r1/2')
+		plt.axvline(r412, color='cyan', label='stacked 4r1/2')
 		plt.xlabel('Radii (kpc)', fontsize=10)
 		plt.legend(loc=0,prop={'size':6.5})
 		plt.show()
+		
+	#everything at this point comes out as  logs	
+	Ms, cs, errs= get_slopes1(r12s, r412s,rad, ld, error=None, scale='log', smax=stax)
+	M, c, logrcut, logldcut, sterr, errcut =get_slopes1(r12, r412, mrad, mdens, error=mlogerr,  scale='log',smax=stax)
 	
+	logldfit = M * logrcut + c #in log
 	
-	print('min r1/2 is ', np.min(10**logr12s),'max 4r1/2 is ', np.max(10**logr412s))
-	print('min stackr1/2 is ', 10**logr12,'max stack4r1/2 is ', 10**logr412)
+	print('the lum dens cut: ', logldcut)
+	print('the lum dens fit: ', logldfit)
 	
-	Ms, cs, errs= get_slopes1(logr12s, logr412s,lograd, loglumd, error=None, smax=stax)
-	M, c, logrcut, logldcut, sterr, errcut =get_slopes1(logr12, logr412, mlograd, mlogdens, error=mlogerr, smax=stax)
+	slopetest='' #distribution of slopes
+	if slopetest:
+		import matplotlib.pyplot as plt
+		plt.hist(Ms, 10,color='green', alpha=.8, label= 'individual slopes')
+		plt.axvline(M, color='blue', label='stacked slope')
+		plt.xlabel('Slope Distribution', fontsize=10)
+		plt.legend(loc=0,prop={'size':6.5})
+		plt.show()
+		
+	goodgod='' #how slope fits to stacked image
+	if goodgod:
+		import matplotlib.pyplot as plt
+		plt.scatter(np.log10(mrad), np.log10(mdens), color='red', marker='o')
+		plt.xlabel('Log Radii (kpc)', fontsize=10)
+		plt.ylabel('Log Luminosity Density')
+		plt.plot(logrcut, logldfit, color='magenta')
+		plt.show()
+		
+	#error is already in log
+	print('min: ', np.min(Ms), 'max: ', np.max(Ms), 'mean: ', np.mean(Ms))
+	print('stacked m: ', M)
 	
-	cutmlogld = M * logrcut + c
-	
-	ind=[loglum, loglumd, lograd, logr12s]
-	means=[mloglum,mlogdens,mlograd,logr12, mlogerr]
+	ind=[np.log10(lum), np.log10(ld), np.log10(rad), np.log10(r12s)]
+	means=[np.log10(mlum),np.log10(mdens),np.log10(mrad),np.log10(r12), mlogerr]
 	ind_slope=[Ms, cs, errs]
-	mean_slopes=[M, c, logrcut, logldcut, cutmlogld, sterr, errcut]
-	
+	mean_slopes=[M, c, logrcut, logldcut, logldfit, sterr, errcut]
 	return ind, means, ind_slope, mean_slopes
 	
 inds1, means1, ind_slope1, mean_slopes1=my_halflights(Flagdat)
 inds2, means2, ind_slope2, mean_slopes2=my_halflights(Notdat)
 
-print('mean radii= ', means1[2], means2[2])
+def z_distr(data1, data2):
+	plt.hist(data1, color='red',alpha=.8, label='Not Flagged')
+	plt.hist(data2, color='blue', alpha=0.8, label='Flagged')
+	plt.xlabel('Redshift Distribution')
+	plt.legend()
+	plt.show()
+
+#z_distr(Flagdat['Z'], Notdat['Z'])
+
 def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2):
 	import matplotlib.pyplot as plt
 	import numpy as np
@@ -242,52 +219,12 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.legend(loc=0,prop={'size':6.0})
 		plt.show()
 	
-	#dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=False)
+	dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=False)
 	
-	#all_lumprof(inds1[1], inds2[1], inds1[2], inds2[2], means1[2], means2[2], means1[1], means2[1],means1[4], means2[4])
+	all_lumprof(inds1[1], inds2[1], inds1[2], inds2[2], means1[2], means2[2], means1[1], means2[1],means1[4], means2[4])
 	
 	
-	#lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
-	just_one(inds2[0],inds2[2], means2[0], means2[2])
+	lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
+	#just_one(inds2[0],inds2[2], means2[0], means2[2])
 		
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2)
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-#not in use currently	
-def my_halflight(dat1):
-	loglum, lograd, loglumd= get_ind_lums(dat1, bands, aperture, scale='log')
-	if stax==True:
-		loglum, lograd, loglumd= upper_rad_cut(loglum, lograd, loglumd, 4, proof=False)
-	#print('length of radius array is ', len(lograd))
-	
-	mloglum,  mlogdens, mlograd, mlogerr= get_avg_lums(loglum, lograd, loglumd, gr=[1,80,11],type=ty, scale='lindata')
-	
-	logr12s= get_halflight(loglum, lograd)
-	
-	logr12= get_halflight(mloglum, mlograd)
-	
-	Ms, cs, errs= get_slopes(logr12s, lograd, loglumd, error=None, smax=stax)
-	M, c, logrcut, logldcut, sterr, errcut =get_slopes(logr12, mlograd, mlogdens, error=mlogerr, smax=stax)
-	
-	cutmlogld = M * logrcut + c
-	
-	ind=[loglum, loglumd, lograd, logr12s]
-	means=[mloglum,mlogdens,mlograd,logr12, mlogerr]
-	ind_slope=[Ms, cs, errs]
-	mean_slopes=[M, c, logrcut, logldcut, cutmlogld, sterr, errcut]
-	#logrcut and logldcut are for lines of best fit
-	
-	return ind, means, ind_slope, mean_slopes

@@ -1,22 +1,16 @@
-def get_halfrad(lograds, loglums):
-	from scipy import interpolate
-	import math
-	import numpy as np
+from scipy import interpolate
+import math
+import numpy as np
+def get_halfrad(R, L):
 	print('from halflight_math')
-	N=np.ndim(lograds)
-	if N==2:
-		for n in range(0, len(lograds)):
-			logL=loglums[n]
-			logr=lograds[n]
+	#should be in linear
+	maxL=np.max(L)
+	halfL=maxL/2
+			
+	f=interpolate.interp1d(L,R, kind='linear', axis=-1)
 	
-			maxL=10**np.max(logL)
-			halfL=maxL/2
-			logL12=np.log10(halfL)
-	
-			f=interpolate.interp1d(logL,logr, kind='linear', axis=-1)
-	
-			logr12=f(loghalfL)
-	return logr12
+	r12=f(halfL)
+	return r12
 	
 def my_linregress3(x,y,err):	#This one works!
 	import numpy as np

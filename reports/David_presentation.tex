@@ -2,7 +2,7 @@
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{multicol}
-
+\usepackage{tikz}
 \usepackage[skip=2pt,font=scriptsize]{caption}
 \usepackage{subfig}
 \graphicspath{{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/}{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/}}
@@ -69,7 +69,7 @@ Interestingly, we see that galaxies flagged as bright objects are in agreement w
 \section{SFH and Bright Center Objects}
 One test this project is performing is the relationship between the luminosity profile slopes and star formation history (SFH). We use the VESPA code, which fits the spectra of all LRGs in the Sloan Digital Sky Survey's (SDSS) final data release. After matching this catalogue with the LOWZ galaxies, we next separate the LRGs into two different populations, based on whether or not 60\% of the mass of the galaxy is formed in the oldest age bin (between 9.06 and 14 billion years ago). It is important to note that these are all early type galaxies, but we are still distinguishing them by SFH.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \subfloat[Luminosity Density Profiles\label{subfig:sfig1}]{ \includegraphics[width=0.5\textwidth]{3oymeanuplimlumage.pdf}}
 \hfill
 \subfloat[Distribution of alpha\_star slopes\label{subfig:sfig2}]{\includegraphics[width=0.5\textwidth]{3oymeanuplimslope_agedist.pdf}}
@@ -78,11 +78,9 @@ One test this project is performing is the relationship between the luminosity p
 \end{figure}
 
 
-In Figure 2a, the stacked slopes of older and younger populations of LRGs appear to be roughly the same. Figure 2b reveals that their slope distributions, as well, are very similar.  However, in order to completely understand our results, we must see how bright center objects affect our graphs.
+In Figure 2a, the stacked slopes of older and younger populations of LRGs appear to be roughly the same. Figure 2b reveals that their slope distributions, as well, are very similar.  The stacked slopes coincide with the gaussian distribution within one $\sigma$. However, in order to completely understand our results, we must see how bright center objects affect our graphs.
 
-In Figure 3, I separately show the older and younger populations of stars, further split into flagged and not flagged galaxies. *insert these images into two columns*
-
-\begin{figure*}[t]
+\begin{figure*}[H!]
 \includegraphics[width=0.5\textwidth,clip]{3oFmeanuplimlumage.pdf}
 \label{subfig:sfig3}
 \includegraphics[width=0.5\textwidth,clip]{3oFmeanuplimslope_agedist.pdf}
@@ -95,8 +93,9 @@ In Figure 3, I separately show the older and younger populations of stars, furth
 \label{fig:mesh3}
 \end{figure*}
 
+In Figure 3, I separately show the older and younger populations of stars, further split into flagged and not flagged galaxies.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{ ||c|c|c|| }
 \hline
@@ -104,17 +103,17 @@ In Figure 3, I separately show the older and younger populations of stars, furth
 \hline\hline
    & Stacked Slope & Median Slope \\
 \hline
-Old Galaxies & -1.565 +- 0.084 &-1.565 \\
+Old Galaxies & -1.565 $\pm$ 0.084 &-1.565 \\
 \hline
-Young Galaxies &-1.597 +- 0.073 & -1.569\\
+Young Galaxies &-1.597 $\pm$ 0.073 & -1.569\\
 \hline
-Old and Not Flagged & -1.607 +- 0.074 & -1.57\\
+Old and Not Flagged & -1.607 $\pm$ 0.074 & -1.57\\
 \hline
-Old and Flagged & -1.603 +- 0.12 & -1.555\\
+Old and Flagged & -1.603 $\pm$ 0.12 & -1.555\\
 \hline
-Young and Not Flagged & -1.611 +- 0.066 & -1.569\\
+Young and Not Flagged & -1.611 $\pm$ 0.066 & -1.569\\
 \hline
-Young and Flagged & -1.599 +- 0.119 & -1.57\\
+Young and Flagged & -1.599 $\pm$ 0.119 & -1.57\\
 \hline
 \end{tabular}
 \caption{These stacked and median slopes were calculated from specific population's individual galaxy slope distribution}

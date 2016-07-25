@@ -176,11 +176,11 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' Mean Slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
-		plt.xlabel('Log Radii (kpc)')
-		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
-		plt.suptitle('Average Luminosity Densities v Radii', fontsize=16)
-		plt.title(subtitle, fontsize=10)
-		plt.legend(loc=0,prop={'size':6.0})
+		plt.xlabel('Log Radii (kpc)', fontsize=12)
+		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)', fontsize=12)
+		#plt.suptitle('Average Luminosity Densities v Radii', fontsize=16)
+		plt.suptitle(subtitle, fontsize=16)
+		plt.legend(loc=0,prop={'size':7.0})
 		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
 		outdirs=outdir+'lumage.pdf'
 		#plt.show()
@@ -204,25 +204,23 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			plt.xlim(np.min(M),-1.3)
 			ts='KS'
 		
-		
-		
 		plt.axvline(x=m1, color='magenta',label=tag1[2]+' Mean Slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)), zorder=3)
-		plt.plot(0,0, color='magenta', label='Median Slope = '+str(np.round
-		(np.median(m1s),3)))
+		#plt.plot(0,0, color='magenta', label=tag1[2]+'Median Slope = '+str(np.round(np.median(m1s),3)))
 		plt.axvline(x=m2, color='cyan', label=tag2[2]+' Mean Slope= '+str(round(m2,3))+' +- '+str(round(sterr2,3)), zorder=3)
-		plt.plot(0,0, color='cyan', label='Median Slope = '+str(np.round
-		(np.median(m2s),3)))
-		plt.xlabel('Slopes', fontsize=10)
+		#plt.plot(0,0, color='cyan', label=tag2[2]+'Median Slope = '+str(np.round(np.median(m2s),3)))
+		plt.xlabel('Slopes', fontsize=12)
 		plt.xlim(-1.9, -1.4)
-		plt.legend(loc=0,prop={'size':6.5})
-		plt.ylabel('Frequency', fontsize=10)
-		plt.suptitle('With '+ty+' Slopes', fontsize=16)
-		plt.title(subtitle, fontsize=10)
+		plt.legend(loc=0,prop={'size':7.0})
+		plt.ylabel('Frequency', fontsize=12)
+		#plt.suptitle('With '+ty+' Slopes', fontsize=16)
+		plt.suptitle(subtitle, fontsize=16)
 		
 		
 		outdirs=doutdir+ts+'slope_agedist.pdf'
 		#figs.text(0.03, 0.03, txtdist, color='red', weight='bold')
 		#plt.show()
+		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
+		
 		figs.savefig(outdirs)
 		print(outdirs)
 	
@@ -238,9 +236,10 @@ if Toy=='oy':
 		binrange=[2,60,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(dataold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(datayoung, binrange)
-	sub='Populations: old v young'	
-	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Galaxies w/ Mass Fractions >'+per,'( > '+per+')']
-	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Galaxies w/ Mass Fractions <'+per,'( < '+per+')']
+	sub=['Populations: old (>',per,') vs. young (<', per,')'] 
+	sub=''.join(sub)	
+	t1=['Number of Older Galaxies= '+str(len(inds1[0])), 'Older Galaxies','Older ']
+	t2=['Number of YoungerGalaxies= '+str(len(inds2[0])), 'Younger galaxies','Younger ']
 	
 if Toy=='oF':
 	if ty=='med':
@@ -249,9 +248,9 @@ if Toy=='oF':
 		binrange=[2,55,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fold, binrange)
-	sub='Populations: Flagged v Not Flagged as Bright Center Objects'			
-	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Not Flagged and Mass Fractions >'+per,'Not Flagged ( > '+per+')']
-	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Flagged and Mass Fractions >'+per,'Flagged ( > '+per+')']
+	sub='Older Galaxies: Flagged vs. Not Flagged as Bright Center Objects'			
+	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
+	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Flagged','Flagged']
 	
 if Toy=='yF':
 	if ty=='med':
@@ -260,9 +259,9 @@ if Toy=='yF':
 		binrange=[2,60,15] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nyoung, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fyoung, binrange)
-	sub='Populations: Flagged v Not Flagged as Bright Center Objects'		
-	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Not Flagged and Mass Fractions <'+per,'Not Flagged ( < '+per+')']
-	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Flagged and Mass Fractions <'+per,'Flagged ( < '+per+')']
+	sub='Younger Galaxies: Flagged vs. Not Flagged as Bright Center Objects'		
+	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
+	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Flagged','Flagged']
 	
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2, sub, Toy, t1, t2)
 

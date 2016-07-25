@@ -24,7 +24,7 @@ def meanlum2(lumden, rads, Naps, grange=[]):
 	try:
 		ns=grange[2]
 	except:
-		ns=11
+		ns=10
 		
 	bb=np.logspace(math.log10(radmin), math.log10(radmax),num=ns, endpoint=False)
 	

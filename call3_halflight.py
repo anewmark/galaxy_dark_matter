@@ -151,12 +151,12 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.plot(xcut2, yfit2, color='c', label='Flagged mean slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
-		plt.xlabel('Log Radii (kpc)')
-		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
-		plt.title('Average Luminosity Densities v Radii')
+		plt.xlabel('Log Radii (kpc)', fontsize=12)
+		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)', fontsize=12)
+		#plt.title('Average Luminosity Densities v Radii')
 		#plt.xlim(math.log10(1), math.log10(80))
 		#plt.ylim(6,8.6)
-		plt.legend(loc=0,prop={'size':6.0})
+		plt.legend(loc=0,prop={'size':7.0})
 		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
 		outdirs=outdir+'TF.pdf'
 		#plt.show()
@@ -182,18 +182,20 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		print('Standard Deviation (Not Flagged): ', str(np.std(m1s)))
 		print('Standard Deviation (Flagged): ', str(np.std(m2s)))
 		
-		plt.axvline(x=m1, color='magenta', label='Not Flagged Galaxies: slope= '+str(np.round(m1,2))+'  +- ' +str(np.round(sterr1,2)))
-		plt.axvline(x=m2, color='cyan', label='Flagged Galaxies: slope= '+str(np.round(m2,2))+' +- '+str(np.round(sterr2,2)))
-		plt.xlabel('Slopes', fontsize=10)
+		plt.axvline(x=m1, color='magenta', label='Not Flagged Mean Slope= '+str(np.round(m1,2))+'  +- ' +str(np.round(sterr1,2)))
+		plt.axvline(x=m2, color='cyan', label='Flagged Mean Slope= '+str(np.round(m2,2))+' +- '+str(np.round(sterr2,2)))
+		plt.xlabel('Slopes', fontsize=12)
 		plt.xlim(-1.9,-1.4)
-		plt.legend(loc=0,prop={'size':6.5})
-		plt.ylabel('Frequency', fontsize=10)
-		plt.title('With '+ty+' Slopes')
+		plt.legend(loc=0,prop={'size':7.0})
+		plt.ylabel('Frequency', fontsize=12)
+		#plt.title('Population: Flagged vs. Not Flagged as Bright Center Objects', fontsize=16)
 	
 		outdirs=doutdir+'slopedist.pdf'
 		#figs.text(0.03, 0.03, txtdist, color='red', weight='bold')
 		#plt.show()
 		figs.savefig(outdirs)
+		
+		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
 		print(outdirs)
 		
 	def all_lumprof(lum1s, lum2s, rad1s, rad2s, mrad1, mrad2, mden1, mden2, error1, error2):

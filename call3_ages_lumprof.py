@@ -89,6 +89,7 @@ Nold, Fold=get_TF(dataold)
 Nyoung, Fyoung=get_TF(datayoung)
 
 
+
 def my_halflights(dat1,binrange):
 	lum, rad, ld= get_ind_lums(dat1, bands, aperture, scale='linear')
 	#print(lum[0], rad[0], lumd[0]) #this confirms it is all linear
@@ -102,7 +103,7 @@ def my_halflights(dat1,binrange):
 		#min=  0.252185984021 max=  73.9664504085
 	#second #points in each bin: [146 169 170 160 183 168 150 172 155 143]
 		#min=  0.558031773826 max=  73.9664504085
-	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
+	mlum,  mdens, mrad, mlogerr, medens= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
 	r12s, r412s= get_halflight2(lum, rad, mult=4)
 	r12, r412= get_halflight2(mlum, mrad, mult=4)
 	
@@ -246,9 +247,9 @@ if Toy=='oy':
 	
 if Toy=='oF':
 	if ty=='med':
-		binrange=[2,60,20] #for med
+		binrange=[2,55,20] #for med
 	elif ty=='mean':
-		binrange=[2,60,20] #for mean
+		binrange=[2,55,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fold, binrange)
 	sub='Populations: Flagged v Not Flagged as Bright Center Objects'			

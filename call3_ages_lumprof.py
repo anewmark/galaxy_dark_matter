@@ -17,7 +17,7 @@ types=['mean', 'med']
 ty=types[0]
 
 comps=['oy', 'oF', 'yF']
-Toy=comps[1]
+Toy=comps[2]
 
 stax=True
 if stax==False:
@@ -96,14 +96,8 @@ def my_halflights(dat1,binrange):
 	if stax==True:
 		print('stax is true and doing upper cut now')
 		lum, rad, ld= upper_rad_cut(lum, rad, ld, 4, proof=False)
-	
-	#print('min radius in lin= ', np.min(rad), 'max radius in lin= ', np.max(rad))
-
-	#first #points in each bin:[168 190 176 170 178 175 159 152 106  83]
-		#min=  0.252185984021 max=  73.9664504085
-	#second #points in each bin: [146 169 170 160 183 168 150 172 155 143]
-		#min=  0.558031773826 max=  73.9664504085
-	mlum,  mdens, mrad, mlogerr, medens= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
+		
+	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
 	r12s, r412s= get_halflight2(lum, rad, mult=4)
 	r12, r412= get_halflight2(mlum, mrad, mult=4)
 	
@@ -175,11 +169,11 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		for n in range(len(lum2s)):
 			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
 		plt.scatter(x1, y1, color='r', marker='o',label=tag1[1]+' ('+str(len(inds1[0]))+')')
-		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+' mean slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)))
+		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+' Mean Slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)))
 		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
 
 		plt.scatter(x2, y2, color='b', marker='o',label=tag2[1]+' ('+str(len(inds2[0]))+')')
-		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' mean slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
+		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' Mean Slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
 		plt.xlabel('Log Radii (kpc)')
@@ -209,14 +203,17 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			plt.plot(0,0, c='green', marker='*', label='K-S test is '+str(np.round(D,3)))
 			plt.xlim(np.min(M),-1.3)
 			ts='KS'
-	
-		#print('Standard Deviation ('+tag1[2]+'): ', str(round(np.std(m1s),2)))
-		#print('Standard Deviation ('+tag2[2]+'): ', str(round(np.std(m2s),2)))
 		
-		plt.axvline(x=m1, color='magenta',label=tag1[2]+' mean slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)), zorder=3)
-		plt.axvline(x=m2, color='cyan', label=tag2[2]+' mean slope= '+str(round(m2,3))+' +- '+str(round(sterr2,3)), zorder=3)
+		
+		
+		plt.axvline(x=m1, color='magenta',label=tag1[2]+' Mean Slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)), zorder=3)
+		plt.plot(0,0, color='magenta', label='Median Slope = '+str(np.round
+		(np.median(m1s),3)))
+		plt.axvline(x=m2, color='cyan', label=tag2[2]+' Mean Slope= '+str(round(m2,3))+' +- '+str(round(sterr2,3)), zorder=3)
+		plt.plot(0,0, color='cyan', label='Median Slope = '+str(np.round
+		(np.median(m2s),3)))
 		plt.xlabel('Slopes', fontsize=10)
-		
+		plt.xlim(-1.9, -1.4)
 		plt.legend(loc=0,prop={'size':6.5})
 		plt.ylabel('Frequency', fontsize=10)
 		plt.suptitle('With '+ty+' Slopes', fontsize=16)

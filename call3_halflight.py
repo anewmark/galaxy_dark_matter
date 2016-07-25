@@ -133,16 +133,23 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 	#ind_slope=[Ms, cs, errs]
 	#mean_slopes=[M, c, logrcut, logldcut, cutmlogld, sterr, errcut]
 	
-	def lum_mult_fit(x1, x2, y1, y2, xcut1, xcut2, yfit1, yfit2, sterr1, sterr2 , m1, m2, error1, error2, outdir=''):
+	def lum_mult_fit(lum1s, lum2s, rad1s, rad2s,x1, x2, y1, y2, xcut1, xcut2, yfit1, yfit2, sterr1, sterr2 , m1, m2, error1, error2, outdir=''):
 		print('Make Scatter Plots')
+		import matplotlib.pyplot as plt
+		import numpy as np
+		import math
 		f=plt.figure()
-		plt.scatter(x1, y1, color='r', marker='o',label='Not Flagged Galaxies')
-		plt.plot(xcut1, yfit1, color='m', label='Fitted Not Flagged Galaxies: slope= '+str(np.round(m1,2))+' +- '+str(np.round(sterr1,2)))
-		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r')	
+		for n in range(len(lum1s)):
+			plt.plot(rad1s[n], lum1s[n],color='lightgrey', marker='.')
+		for n in range(len(lum2s)):
+			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
+		plt.scatter(x1, y1, color='r', marker='o',label='Not Flagged Galaxies ('+str(len(rad1s))+')')
+		plt.plot(xcut1, yfit1, color='m', label='Not Flagged mean slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)))
+		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
 
-		plt.scatter(x2, y2, color='b', marker='o',label='Flagged Galaxies')
-		plt.plot(xcut2, yfit2, color='c', label='Fitted Flagged Galaxies: slope= '+str(np.round(m2,2))+' +- '+str(np.round(sterr2,2)))
-		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b')
+		plt.scatter(x2, y2, color='b', marker='o',label='Flagged Galaxies ('+str(len(rad2s))+')')
+		plt.plot(xcut2, yfit2, color='c', label='Flagged mean slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
+		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
 		plt.xlabel('Log Radii (kpc)')
 		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
@@ -222,10 +229,10 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 	
 	dist_mean(ind_slope1[0],ind_slope2[0],mean_slopes1[0],mean_slopes2[0],mean_slopes1[5], mean_slopes2[5], KS=False)
 	
-	all_lumprof(inds1[1], inds2[1], inds1[2], inds2[2], means1[2], means2[2], means1[1], means2[1],means1[4], means2[4])
+	#all_lumprof(inds1[1], inds2[1], inds1[2], inds2[2], means1[2], means2[2], means1[1], means2[1],means1[4], means2[4])
 	
 	
-	lum_mult_fit(means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
+	lum_mult_fit(inds1[1], inds2[1], inds1[2], inds2[2],means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
 	#just_one(inds2[0],inds2[2], means2[0], means2[2])
 		
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2)

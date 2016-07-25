@@ -57,7 +57,7 @@ def my_halflights(dat1):
 		lum, rad, ld= upper_rad_cut(lum, rad, ld, 4, proof=False)
 	
 	#print('min radius in lin= ', np.min(rad), 'max radius in lin= ', np.max(rad))
-	binrange=[2.2,65,10]
+	binrange=[2.2,65,15]
 	#Flagdat #points in each bin: [592 733 655 717 732 640 667 681 697 610]
 	#Notdat #points in each bin:[177 163 187 183 169 165 170 169 185  94]
 	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
@@ -166,7 +166,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 	def dist_mean(m1s, m2s, m1, m2, sterr1, sterr2, KS=False):
 
 		figs=plt.figure()
-		bs=np.linspace(-2.0,-1.4,num=15, endpoint=False)
+		bs=np.linspace(-1.9,-1.4,num=20, endpoint=False)
 		n1, b1, p1= plt.hist(m1s, bs, color='red', label='Not Flagged Galaxies ('+str(len(m1s))+')', alpha=0.8)
 		n2, b2, p2= plt.hist(m2s,bs, color='blue', label='Flagged Galaxies ('+str(len(m2s))+')', alpha=0.8)
 		
@@ -185,6 +185,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.axvline(x=m1, color='magenta', label='Not Flagged Galaxies: slope= '+str(np.round(m1,2))+'  +- ' +str(np.round(sterr1,2)))
 		plt.axvline(x=m2, color='cyan', label='Flagged Galaxies: slope= '+str(np.round(m2,2))+' +- '+str(np.round(sterr2,2)))
 		plt.xlabel('Slopes', fontsize=10)
+		plt.xlim(-1.9,-1.4)
 		plt.legend(loc=0,prop={'size':6.5})
 		plt.ylabel('Frequency', fontsize=10)
 		plt.title('With '+ty+' Slopes')

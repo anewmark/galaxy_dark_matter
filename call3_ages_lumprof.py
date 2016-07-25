@@ -17,7 +17,7 @@ types=['mean', 'med']
 ty=types[0]
 
 comps=['oy', 'oF', 'yF']
-Toy=comps[2]
+Toy=comps[0]
 
 stax=True
 if stax==False:
@@ -192,7 +192,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import numpy as np
 		import math
 		figs=plt.figure()
-		bs=np.linspace(-2.0,-1.4,num=15, endpoint=False)
+		bs=np.linspace(-1.9,-1.4,num=20, endpoint=False)
 		n1, b1, p1= plt.hist(m1s, bs, color='red', label=tag1[1]+ ' ('+str(len(m1s))+')', alpha=0.65, zorder=2, normed=1)
 		n2, b2, p2= plt.hist(m2s,bs, color='blue', label=tag2[1]+ ' ('+str(len(m2s))+')', alpha=0.65,zorder=2,normed=1)
 		ts=''

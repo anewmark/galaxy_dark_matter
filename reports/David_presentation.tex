@@ -18,11 +18,9 @@
 \tableofcontents{}
 \section{Introduction}
 
-The main objective of HSC Project is to understand the correlation between the star formation history and Dark Matter Halos of Luminous Red Galaxies (LRGs) through studying the slope of the luminosity density profiles.
+An objective of HSC Project is to understand the correlation between the star formation history and Dark Matter Halos of Luminous Red Galaxies (LRGs) through studying the slope of the luminosity density profiles.
 
-In order to certify the validity of our results, it is essential that we test the photometric contamination caused by fainter galaxies that are not properly resolved, or \textit{deblended}. Such galaxies can saturate the apparent magnitude of the galaxy, most prominently at greater aperture distances from the center.
-
-\section{Distinguishing Bright Center Objects}
+In order to certify the validity of our results, it is essential that we test the photometric contamination caused by fainter galaxies that are not properly resolved, or \textit{deblended}. Such galaxies can saturate the apparent magnitude of the galaxy, most prominently at the outer stellar halo of the galaxy.
 
 \begin{table}[h]
 \centering
@@ -49,20 +47,27 @@ flags.pixel.clipped any \\ [1ex]
 \label{table:1}
 \end{table}
 
-The LOWZ catalogue flags specific galaxies we fear have been contaminated. We determined that the LRGs flagged by at least one of the flags in Table \ref{table:1} influence the stacked luminosity profiles, and therefore it is necessary to disregard these galaxies. 
+The LOWZ catalogue flags specific galaxies we suspect have been contaminated. We determined that the LRGs flagged by at least one of the flags in Table \ref{table:1} influence the stacked luminosity profiles, and therefore it is necessary to disregard these galaxies. 
 
-To determine whether bright object centers saturate our luminosity profiles, the LRGs are separated into two populations, one where flags.pixel.bright.object is \textbf{True} and one where flags.pixel.bright.object is \textbf{False}. In Figure 1, we construct a stacked luminosity profile for each flagged (blue points) and non-flagged populations (red points). In the background, I plot the luminosity profiles of the individual galaxies.
+\section{Distinguishing Bright Center Objects}
 
-\begin{figure}[t]
-\centerline{\includegraphics[width=0.9\textwidth]{3meanuplimTF.pdf}}
-\caption{Stacked Luminosity Profile for LRG's flagged as Bright Center Objects (blue points), and those not flagged as Bright Center Objects (red points). }
+To determine whether bright object centers saturate our luminosity profiles, the LRGs are separated into two populations, one where flags.pixel.bright.object is \textbf{True} and one where flags.pixel.bright.object is \textbf{False}. In Figure 1, we construct a stacked luminosity profile for each flagged (blue points) and non-flagged populations (red points). In the background, I plot the luminosity profiles of the individual galaxies (gray curves).
+
+\begin{figure}[t!]
+\subfloat[Luminosity Density Profiles\label{subfig:sfiga}]{ \includegraphics[width=0.5\textwidth]{3meanuplimTF.pdf}}
+\hfill
+\subfloat[Distribution of alpha\_star slopes\label{subfig:sfigb}]{\includegraphics[width=0.5\textwidth]{3meanuplimslopedist.pdf}}
+ \caption{Stacked Luminosity Profile for LRG's flagged as Bright Center Objects (blue points), and those not flagged as Bright Center Objects (red points). }
 \label{fig:mesh1}
 \end{figure}
 
-Here, we see that that, as predicted, galaxies flagged as bright objects have slightly higher luminosity density profiles (and greater error) than those not flagged. While this difference appears to be insignificant, we next need to check how these flags alter specific tests we want to accomplish.
+
+Varying parts of the stacked profile use distinct galaxies at different redshifts. In order to homogenize our results, so they are all fit to the same physical boundary, we set a uniform outer limit. For our experiment, this outer boundary was exactly 4r1/2 and was applied to both individual galaxies and stacked profiles. As seen in \ref{subfig:sfigb}, by removing the largest apertures from the profile, the mean slope of the flagged and not flagged galaxies are not consistent (within the scatter) with their distributions. This indicates we have removed any parts of the slope at risk of contamination from un-blended sources at the galaxies' envelopes. 
+
+Interestingly, we see that galaxies flagged as bright objects are in agreement with those not flagged. While there appears to be no real difference, we next need to check how these flags alter specific tests we want to accomplish.
 
 \section{SFH and Bright Center Objects}
-One test this project is performing is the relationship between the luminosity profile slopes and star formation history (SFH). Using the VESPA code, which fits the spectra of all LRGs in the Sloan Digital Sky Survey's (SDSS) final data release. After matching this catalogue with the LOWZ galaxies, we next separate the LRGs into two different populations, based on whether or not 60\% of the mass of the galaxy is formed in the oldest age bin (between 0.002 and 0.02 years after the Big Bang). It is important to note that these are all early type galaxies, but we are still distinguishing them by age.
+One test this project is performing is the relationship between the luminosity profile slopes and star formation history (SFH). We use the VESPA code, which fits the spectra of all LRGs in the Sloan Digital Sky Survey's (SDSS) final data release. After matching this catalogue with the LOWZ galaxies, we next separate the LRGs into two different populations, based on whether or not 60\% of the mass of the galaxy is formed in the oldest age bin (between 9.06 and 14 billion years ago). It is important to note that these are all early type galaxies, but we are still distinguishing them by SFH.
 
 \begin{figure}[h!]
 \subfloat[Luminosity Density Profiles\label{subfig:sfig1}]{ \includegraphics[width=0.5\textwidth]{3oymeanuplimlumage.pdf}}
@@ -77,11 +82,26 @@ In Figure 2a, the stacked slopes of older and younger populations of LRGs appear
 
 In Figure 3, I separately show the older and younger populations of stars, further split into flagged and not flagged galaxies. *insert these images into two columns*
 
-\begin{table}[h!]
-\begin{tabular}{ |c|c|c|  }
+\begin{figure*}[t]
+\includegraphics[width=0.5\textwidth,clip]{3oFmeanuplimlumage.pdf}
+\label{subfig:sfig3}
+\includegraphics[width=0.5\textwidth,clip]{3oFmeanuplimslope_agedist.pdf}
+\label{subfig:sfig4}
+\includegraphics[width=0.5\textwidth,clip]{3yFmeanuplimlumage.pdf}
+\label{subfig:sfig5}
+\includegraphics[width=0.5\textwidth,clip]{3yFmeanuplimslope_agedist.pdf}
+\label{subfig:sfig6}
+\caption{The left\-hand column shows the luminosity profiles of older (upper) and younger (lower) galaxies. Flagged Bright Object Centers are blue points and Not Flagged are red points. The right\-hand column shows the alpha\_star distribution amongst galaxies in each population.}
+\label{fig:mesh3}
+\end{figure*}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ ||c|c|c|| }
 \hline
-\multicolumn{3}{|c|}{Distribution of Alpha\_Star Slopes}\\
-\hline
+\multicolumn{3}{||c||}{Distribution of Alpha\_Star Slopes}\\
+\hline\hline
    & Stacked Slope & Median Slope \\
 \hline
 Old Galaxies & -1.565 +- 0.084 &-1.565 \\

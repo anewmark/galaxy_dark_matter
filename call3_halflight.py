@@ -7,11 +7,14 @@ import matplotlib.pyplot as plt
 from halflight3_first import *
 from def_get_mags import *
 from def_halflight_math import *
+from my_style import get_presentation
 
 bands=['g', 'r', 'i','z', 'y']
 daperture=[1.01,1.51,2.02,3.02,4.03,5.71,8.40,11.8,16.8,23.5]
 aperture=[x*0.5 for x in daperture]
 
+get_presentation()
+	
 ty='mean'
 #ty='med'
 
@@ -20,6 +23,7 @@ if stax==False:
 	tag=''
 else:
 	tag='uplim'
+	#tag=''
 txtdist= 'Figure2'
 txtslope='Figure1'
 
@@ -46,23 +50,24 @@ def get_TF(data):
 	return Flag, Not	
 	
 newdata=do_cuts(bigdata)
-Flagdat, Notdat=get_TF(newdata)
-Notdat=Notdat[Notdat['Z']>0.2]   ## WANT X ZCUT FOR NOTDAT ONLY
+Flagdat, Notdat1=get_TF(newdata)
+Notdat=Notdat1[Notdat1['Z']>0.2]   ## WANT X ZCUT FOR NOTDAT ONLY
 
 def my_halflights(dat1):
 	lum, rad, ld= get_ind_lums(dat1, bands, aperture, scale='linear')
 	#print(lum[0], rad[0], lumd[0]) #this confirms it is all linear
+	x=6
 	if stax==True:
 		print('stax is true and doing upper cut now')
-		lum, rad, ld= upper_rad_cut(lum, rad, ld, 4, proof=False)
+		lum, rad, ld= upper_rad_cut(lum, rad, ld, x, proof=False)
 	
 	#print('min radius in lin= ', np.min(rad), 'max radius in lin= ', np.max(rad))
 	binrange=[2.2,65,15]
 	#Flagdat #points in each bin: [592 733 655 717 732 640 667 681 697 610]
 	#Notdat #points in each bin:[177 163 187 183 169 165 170 169 185  94]
 	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
-	r12s, r412s= get_halflight2(lum, rad, mult=4)
-	r12, r412= get_halflight2(mlum, mrad, mult=4)
+	r12s, r412s= get_halflight2(lum, rad, mult=x)
+	r12, r412= get_halflight2(mlum, mrad, mult=x)
 	
 	halftest=''
 	if halftest:
@@ -116,18 +121,37 @@ inds1, means1, ind_slope1, mean_slopes1=my_halflights(Flagdat)
 inds2, means2, ind_slope2, mean_slopes2=my_halflights(Notdat)
 
 def z_distr(data1, data2):
+	f=plt.figure()
+	#plt.style.use('presentation')
 	plt.hist(data1, color='red',alpha=.8, label='Not Flagged')
 	plt.hist(data2, color='blue', alpha=0.8, label='Flagged')
 	plt.xlabel('Redshift Distribution')
+	plt.ylabel('Frequency')
 	plt.legend()
-	plt.show()
+	#plt.show()
+	outdirs=doutdir+'zdist.pdf'
+	f.savefig(outdirs)
+z_distr(Flagdat['Z'], Notdat1['Z'])
 
-#z_distr(Flagdat['Z'], Notdat['Z'])
+def appmag_dist(data1, data2):
+	f=plt.figure()
+	#plt.style.use('presentation')
+	plt.hist(data1, color='red',alpha=.8, label='Not Flagged')
+	plt.hist(data2, color='blue', alpha=0.8, label='Flagged')
+	plt.xlabel('Apparent Magnitude (m) Distribution')
+	plt.ylabel('Frequency')
+	plt.legend()
+	#plt.show()
+	outdirs=doutdir+'magdist.pdf'
+	f.savefig(outdirs)
+appmag_dist(Flagdat['imag_forced_cmodel'], Notdat1['imag_forced_cmodel'])
+
 
 def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2):
 	import matplotlib.pyplot as plt
 	import numpy as np
 	import math
+	#plt.style.use('presentation')
 	#ind=[loglum, loglumd, lograd, logr12s]
 	#means=[mloglum,mlogdens,lograd,logr12, mlogerr]
 	#ind_slope=[Ms, cs, errs]
@@ -143,20 +167,22 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			plt.plot(rad1s[n], lum1s[n],color='lightgrey', marker='.')
 		for n in range(len(lum2s)):
 			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
-		plt.scatter(x1, y1, color='r', marker='o',label='Not Flagged Galaxies ('+str(len(rad1s))+')')
-		plt.plot(xcut1, yfit1, color='m', label='Not Flagged mean slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)))
+		plt.scatter(x1, y1, color='r', marker='o',label='Not Flagged LRGs ('+str(len(rad1s))+')')
+		plt.plot(xcut1, yfit1, color='m', label='Not Flagged Mean Slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)))
 		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
 
-		plt.scatter(x2, y2, color='b', marker='o',label='Flagged Galaxies ('+str(len(rad2s))+')')
-		plt.plot(xcut2, yfit2, color='c', label='Flagged mean slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
+		plt.scatter(x2, y2, color='b', marker='o',label='Flagged LRGs ('+str(len(rad2s))+')')
+		plt.plot(xcut2, yfit2, color='c', label='Flagged Mean Slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
-		plt.xlabel('Log Radii (kpc)', fontsize=12)
-		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)', fontsize=12)
+		plt.xlabel('Log Radii (kpc)')
+		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
 		#plt.title('Average Luminosity Densities v Radii')
 		#plt.xlim(math.log10(1), math.log10(80))
 		#plt.ylim(6,8.6)
-		plt.legend(loc=0,prop={'size':7.0})
+		#plt.legend(loc=0, labelspacing=0.25,borderpad=.25, prop={'size':9.5})
+		plt.legend(loc=0, prop={'size':9.5})
+		
 		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
 		outdirs=outdir+'TF.pdf'
 		#plt.show()
@@ -164,11 +190,10 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		print(outdirs)
 
 	def dist_mean(m1s, m2s, m1, m2, sterr1, sterr2, KS=False):
-
 		figs=plt.figure()
 		bs=np.linspace(-1.9,-1.4,num=20, endpoint=False)
-		n1, b1, p1= plt.hist(m1s, bs, color='red', label='Not Flagged Galaxies ('+str(len(m1s))+')', alpha=0.8)
-		n2, b2, p2= plt.hist(m2s,bs, color='blue', label='Flagged Galaxies ('+str(len(m2s))+')', alpha=0.8)
+		n1, b1, p1= plt.hist(m1s, bs, color='red', label='Not Flagged LRGs ('+str(len(m1s))+')', alpha=0.8)
+		n2, b2, p2= plt.hist(m2s,bs, color='blue', label='Flagged LRGs ('+str(len(m2s))+')', alpha=0.8)
 		
 		ts=''
 		if KS==True:
@@ -184,10 +209,12 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		
 		plt.axvline(x=m1, color='magenta', label='Not Flagged Mean Slope= '+str(np.round(m1,2))+'  +- ' +str(np.round(sterr1,2)))
 		plt.axvline(x=m2, color='cyan', label='Flagged Mean Slope= '+str(np.round(m2,2))+' +- '+str(np.round(sterr2,2)))
-		plt.xlabel('Slopes', fontsize=12)
-		plt.xlim(-1.9,-1.4)
-		plt.legend(loc=0,prop={'size':7.0})
-		plt.ylabel('Frequency', fontsize=12)
+		plt.xlabel('Slopes')
+		#plt.xlim(-1.9,-1.4)
+		
+		plt.legend(loc=0, prop={'size':9.25})
+		#plt.legend(loc=0, labelspacing=0.25,borderpad=.25, prop={'size':9.5})
+		plt.ylabel('Frequency')
 		#plt.title('Population: Flagged vs. Not Flagged as Bright Center Objects', fontsize=16)
 	
 		outdirs=doutdir+'slopedist.pdf'

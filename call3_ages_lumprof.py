@@ -8,7 +8,8 @@ from halflight3_first import *
 from def_get_mags import *
 from def_halflight_math import *
 from def_ages import mass_frac_cut1
-
+from my_style import get_presentation
+get_presentation()
 bands=['g', 'r', 'i','z', 'y']
 daperture=[1.01,1.51,2.02,3.02,4.03,5.71,8.40,11.8,16.8,23.5]
 aperture=[x*0.5 for x in daperture]
@@ -88,18 +89,17 @@ datayoung=ydata[starts2==9.04]
 Nold, Fold=get_TF(dataold)
 Nyoung, Fyoung=get_TF(datayoung)
 
-
-
 def my_halflights(dat1,binrange):
 	lum, rad, ld= get_ind_lums(dat1, bands, aperture, scale='linear')
 	#print(lum[0], rad[0], lumd[0]) #this confirms it is all linear
+	x=6
 	if stax==True:
 		print('stax is true and doing upper cut now')
-		lum, rad, ld= upper_rad_cut(lum, rad, ld, 4, proof=False)
+		lum, rad, ld= upper_rad_cut(lum, rad, ld, x, proof=False)
 		
 	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
-	r12s, r412s= get_halflight2(lum, rad, mult=4)
-	r12, r412= get_halflight2(mlum, mrad, mult=4)
+	r12s, r412s= get_halflight2(lum, rad, mult=x)
+	r12, r412= get_halflight2(mlum, mrad, mult=x)
 	
 	halftest=''
 	if halftest:
@@ -163,6 +163,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import matplotlib.pyplot as plt
 		import numpy as np
 		import math
+		#plt.style.use('presentation')
 		f=plt.figure()
 		for n in range(len(lum1s)):
 			plt.plot(rad1s[n], lum1s[n],color='lightgrey', marker='.')
@@ -176,11 +177,11 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' Mean Slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
-		plt.xlabel('Log Radii (kpc)', fontsize=12)
-		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)', fontsize=12)
+		plt.xlabel('Log Radii (kpc)')
+		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
 		#plt.suptitle('Average Luminosity Densities v Radii', fontsize=16)
-		plt.suptitle(subtitle, fontsize=16)
-		plt.legend(loc=0,prop={'size':7.0})
+		plt.suptitle(subtitle, fontsize=18)
+		plt.legend(loc=0, prop={'size':9.5})
 		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
 		outdirs=outdir+'lumage.pdf'
 		#plt.show()
@@ -191,6 +192,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import matplotlib.pyplot as plt
 		import numpy as np
 		import math
+		#plt.style.use('presentation')
 		figs=plt.figure()
 		bs=np.linspace(-1.9,-1.4,num=20, endpoint=False)
 		n1, b1, p1= plt.hist(m1s, bs, color='red', label=tag1[1]+ ' ('+str(len(m1s))+')', alpha=0.65, zorder=2, normed=1)
@@ -208,17 +210,14 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		#plt.plot(0,0, color='magenta', label=tag1[2]+'Median Slope = '+str(np.round(np.median(m1s),3)))
 		plt.axvline(x=m2, color='cyan', label=tag2[2]+' Mean Slope= '+str(round(m2,3))+' +- '+str(round(sterr2,3)), zorder=3)
 		#plt.plot(0,0, color='cyan', label=tag2[2]+'Median Slope = '+str(np.round(np.median(m2s),3)))
-		plt.xlabel('Slopes', fontsize=12)
-		plt.xlim(-1.9, -1.4)
-		plt.legend(loc=0,prop={'size':7.0})
-		plt.ylabel('Frequency', fontsize=12)
+		plt.xlabel('Slopes')
+		#plt.xlim(-1.9, -1.4)
+		plt.legend(loc=0, prop={'size':9.0})
+		plt.ylabel('Frequency')
 		#plt.suptitle('With '+ty+' Slopes', fontsize=16)
-		plt.suptitle(subtitle, fontsize=16)
-		
+		plt.suptitle(subtitle, fontsize=18)
 		
 		outdirs=doutdir+ts+'slope_agedist.pdf'
-		#figs.text(0.03, 0.03, txtdist, color='red', weight='bold')
-		#plt.show()
 		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
 		
 		figs.savefig(outdirs)
@@ -238,8 +237,8 @@ if Toy=='oy':
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(datayoung, binrange)
 	sub=['Populations: old (>',per,') vs. young (<', per,')'] 
 	sub=''.join(sub)	
-	t1=['Number of Older Galaxies= '+str(len(inds1[0])), 'Older Galaxies','Older ']
-	t2=['Number of YoungerGalaxies= '+str(len(inds2[0])), 'Younger galaxies','Younger ']
+	t1=['# of Older LRGs= '+str(len(inds1[0])), 'Older LRGs','Older ']
+	t2=['# of Younger LRGs= '+str(len(inds2[0])), 'Younger LRGs','Younger ']
 	
 if Toy=='oF':
 	if ty=='med':
@@ -248,9 +247,9 @@ if Toy=='oF':
 		binrange=[2,55,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fold, binrange)
-	sub='Older Galaxies: Flagged vs. Not Flagged as Bright Center Objects'			
-	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
-	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Flagged','Flagged']
+	sub='Older LRGs: Bright Center Objects Flag'			
+	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
+	t2=['# of LRGs= '+str(len(inds2[0])), 'Flagged','Flagged']
 	
 if Toy=='yF':
 	if ty=='med':
@@ -259,9 +258,9 @@ if Toy=='yF':
 		binrange=[2,60,15] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nyoung, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fyoung, binrange)
-	sub='Younger Galaxies: Flagged vs. Not Flagged as Bright Center Objects'		
-	t1=['Number of Galaxies= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
-	t2=['Number of Galaxies= '+str(len(inds2[0])), 'Flagged','Flagged']
+	sub='Younger LRGs: Bright Center Objects Flag'		
+	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
+	t2=['# of LRGs= '+str(len(inds2[0])), 'Flagged','Flagged']
 	
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2, sub, Toy, t1, t2)
 

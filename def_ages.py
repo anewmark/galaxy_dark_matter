@@ -177,12 +177,8 @@ def stack_mass3(ages,mass, Tmass,bb):
 		stmass=mass[ages==bin]
 		stm=Tmass[ages==bin]
 		mf=stmass/stm
-		print(len(mf))
-		print(mf)
-		#print('Number of galaxies in this bin= ', len(stmass))
-		#mf=mfs[ages==bin]
 		#print(len(mf))
-		#mf=stmass/stm
+		#print(mf)
 		means=np.mean(mf)
 		#mean1=np.sum(mf)/len(stm) #used to check to make sure means=mean1
 		err=np.std(mf)/len(mf)

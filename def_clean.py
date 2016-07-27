@@ -226,7 +226,7 @@ def get_slopes1(data, lum, hx, x, y, error=None, names=None, smax=False):
 	from def_mymath import my_linregress3
 	from my_def_plots import scatter_fit, simple_hist
 	get_vir_r= lambda M, ro, delta_c: (M/(4./3.*math.pi*rho*delta_c))**(1./3.)
-	mult=5
+	mult=6
 	Ndim=np.ndim(x)
 	N=len(x)
 	if error is None:

@@ -398,11 +398,11 @@ def meanlum2(datarr, rads, Naps, scale=''):
 			rads.append(rad)
 		rads=np.array(rads)
 
-		#datarr=10**datarr
+	
 		
-		radmin=1 ###### <======== change this one occasionally
-		radmax=80
-		bb=np.logspace(math.log10(radmin), math.log10(radmax),num=11, endpoint=True)
+		radmin=1.
+		radmax=84
+		bb=np.logspace(math.log10(radmin), math.log10(radmax),num=10, endpoint=False)
 		print('bb= ',bb)
 		Naps=len(bb)
 

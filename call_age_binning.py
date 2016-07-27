@@ -93,21 +93,19 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	#plt.bar(x, y, width=bwidth, align='center', color='None')
 	plt.bar(agebin, mf1, width=bwidth, align='center', color='red', alpha=0.85, label='Older Galaxies (Mass Fractions >'+per+')')
 	plt.bar(agebin, mf2, width=bwidth, align='center', color='blue', alpha=0.7,label='Younger Galaxies (Mass Fractions <'+per+')', zorder=2)
+	plt.plot(0,0, label='# Older LRGs= '+str(len(num1)), c='r')
+	plt.plot(0,0, label='# Younger LRGs=' +str(len(num2)),c='b')
 	plt.errorbar(agebin, mf1, yerr=err1,label='Standard Error on the Mean (Older)', fmt='.', color='m')
 	plt.errorbar(agebin, mf2, yerr=err2,label='Standard Error on the Mean (Younger)', fmt='.', color='c')
 	plt.xlabel('Lookback Time (Gyr)')
 	plt.xscale('log')
-	plt.yscale('log')
-	plt.xticks(xsp, label=label, rotation='vertical')
+	#plt.yscale('log')
+	plt.xticks(labels, label=label, rotation='vertical')
 
 	plt.ylabel('Stacked Mass Fractions')
 	plt.title('Age vs. Mass Fractions')
 	#plt.xlim(np.min(x)-bwidth[0], np.max(x)+bwidth[len(bwidth)-1]/2.0)
 	plt.xlim(np.min(start), np.max(end))
-
-
-	plt.plot(0,0, label='# Older Galaxies= '+str(len(num1)), c='r')
-	plt.plot(0,0, label='# Younger Galaxies=' +str(len(num2)),c='b')
 	plt.legend(loc=2,prop={'size':8.0})
 	
 	plt.show()

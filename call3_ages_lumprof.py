@@ -18,7 +18,7 @@ types=['mean', 'med']
 ty=types[0]
 
 comps=['oy', 'oF', 'yF']
-Toy=comps[2]
+Toy=comps[1]
 
 stax=True
 if stax==False:
@@ -170,18 +170,18 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		for n in range(len(lum2s)):
 			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
 		plt.scatter(x1, y1, color='r', marker='o',label=tag1[1]+' ('+str(len(inds1[0]))+')')
-		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+' Mean Slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)))
+		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+' Stacked Slope')
 		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
 
 		plt.scatter(x2, y2, color='b', marker='o',label=tag2[1]+' ('+str(len(inds2[0]))+')')
-		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' Mean Slope= ' +str(round(m2,3))+' +- '+str(round(sterr2,3)))
+		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' Stacked Slope')
 		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
 		plt.xlabel('Log Radii (kpc)')
 		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
 		#plt.suptitle('Average Luminosity Densities v Radii', fontsize=16)
 		plt.suptitle(subtitle, fontsize=18)
-		plt.legend(loc=0, prop={'size':9.5})
+		plt.legend(loc=0, prop={'size':14.0})
 		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
 		outdirs=outdir+'lumage.pdf'
 		#plt.show()
@@ -206,21 +206,21 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			plt.xlim(np.min(M),-1.3)
 			ts='KS'
 		
-		plt.axvline(x=m1, color='magenta',label=tag1[2]+' Mean Slope= '+str(round(m1,3))+' +- '+str(round(sterr1,3)), zorder=3)
+		plt.axvline(x=m1, color='magenta',label=tag1[2]+' Stacked Slope', zorder=3)
 		#plt.plot(0,0, color='magenta', label=tag1[2]+'Median Slope = '+str(np.round(np.median(m1s),3)))
-		plt.axvline(x=m2, color='cyan', label=tag2[2]+' Mean Slope= '+str(round(m2,3))+' +- '+str(round(sterr2,3)), zorder=3)
+		plt.axvline(x=m2, color='cyan', label=tag2[2]+' Stacked Slope', zorder=3)
 		#plt.plot(0,0, color='cyan', label=tag2[2]+'Median Slope = '+str(np.round(np.median(m2s),3)))
 		plt.xlabel('Slopes')
 		#plt.xlim(-1.9, -1.4)
-		plt.legend(loc=0, prop={'size':9.0})
+		plt.legend(loc=2, prop={'size':14.0})
 		plt.ylabel('Frequency')
 		#plt.suptitle('With '+ty+' Slopes', fontsize=16)
 		plt.suptitle(subtitle, fontsize=18)
 		
 		outdirs=doutdir+ts+'slope_agedist.pdf'
 		
-		print('NF: ', np.round(m1,2),' $\pm$ ',np.round(sterr1,2))
-		print('F: ', np.round(m2,2),' $\pm$ ',np.round(sterr2,2))
+		print('NF: ', np.round(m1,3),' $\pm$ ',np.round(sterr1,3))
+		print('F: ', np.round(m2,3),' $\pm$ ',np.round(sterr2,3))
 		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
 		
 		figs.savefig(outdirs)
@@ -238,10 +238,10 @@ if Toy=='oy':
 		binrange=[2,60,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(dataold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(datayoung, binrange)
-	sub=['Populations: old (>',per,') vs. young (<', per,')'] 
+	sub=['Populations: Old (>',per,') vs. Young (<', per,')'] 
 	sub=''.join(sub)	
-	t1=['# of Older LRGs= '+str(len(inds1[0])), 'Older LRGs','Older ']
-	t2=['# of Younger LRGs= '+str(len(inds2[0])), 'Younger LRGs','Younger ']
+	t1=['# Older LRGs= '+str(len(inds1[0])), 'Older','Older']
+	t2=['# Younger LRGs= '+str(len(inds2[0])), 'Younger','Younger']
 	
 if Toy=='oF':
 	if ty=='med':
@@ -250,9 +250,9 @@ if Toy=='oF':
 		binrange=[2,55,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fold, binrange)
-	sub='Older LRGs: Bright Center Objects Flag'			
-	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
-	t2=['# of LRGs= '+str(len(inds2[0])), 'Flagged','Flagged']
+	sub='Older: Bright Center Objects Flag'			
+	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Bright','Not Bright']
+	t2=['# of LRGs= '+str(len(inds2[0])), 'Bright','Bright']
 	
 if Toy=='yF':
 	if ty=='med':
@@ -261,9 +261,9 @@ if Toy=='yF':
 		binrange=[2,60,15] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nyoung, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fyoung, binrange)
-	sub='Younger LRGs: Bright Center Objects Flag'		
-	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Flagged','Not Flagged']
-	t2=['# of LRGs= '+str(len(inds2[0])), 'Flagged','Flagged']
+	sub='Younger: Bright Center Objects Flag'		
+	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Bright','Not Bright']
+	t2=['# of LRGs= '+str(len(inds2[0])), 'Bright','Bright']
 	
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2, sub, Toy, t1, t2)
 

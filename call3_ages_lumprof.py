@@ -18,7 +18,7 @@ types=['mean', 'med']
 ty=types[0]
 
 comps=['oy', 'oF', 'yF']
-Toy=comps[0]
+Toy=comps[2]
 
 stax=True
 if stax==False:
@@ -218,6 +218,9 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.suptitle(subtitle, fontsize=18)
 		
 		outdirs=doutdir+ts+'slope_agedist.pdf'
+		
+		print('NF: ', np.round(m1,2),' $\pm$ ',np.round(sterr1,2))
+		print('F: ', np.round(m2,2),' $\pm$ ',np.round(sterr2,2))
 		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
 		
 		figs.savefig(outdirs)

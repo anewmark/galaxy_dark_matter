@@ -221,7 +221,8 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		#figs.text(0.03, 0.03, txtdist, color='red', weight='bold')
 		#plt.show()
 		figs.savefig(outdirs)
-		
+		print('NF: ', np.round(m1,2),' $\pm$ ',np.round(sterr1,2))
+		print('F: ', np.round(m2,2),' $\pm$ ',np.round(sterr2,2))
 		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
 		print(outdirs)
 		

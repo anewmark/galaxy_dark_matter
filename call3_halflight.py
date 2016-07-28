@@ -150,6 +150,8 @@ def appmag_dist(data1, data2):
 appmag_dist(Flagdat['imag_forced_cmodel'], Notdat1['imag_forced_cmodel'])
 z_distr(Flagdat['Z'], Notdat1['Z'])
 
+print(Flagdat['iblendedness_raw_flux'])
+
 def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2):
 	import matplotlib.pyplot as plt
 	import numpy as np

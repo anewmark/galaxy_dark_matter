@@ -167,9 +167,9 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import math
 		f=plt.figure()
 		for n in range(len(lum1s)):
-			plt.plot(rad1s[n], lum1s[n],color='lightgrey', marker='.')
+			plt.plot(rad1s[n], lum1s[n],color='lightgrey')
 		for n in range(len(lum2s)):
-			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
+			plt.plot(rad2s[n], lum2s[n],color='lightgrey')
 		plt.scatter(x1, y1, color='r', marker='o',label='Not Bright ('+str(len(rad1s))+')')
 		plt.plot(xcut1, yfit1, color='m', label='Not Bright Stacked Slope')
 		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
@@ -192,7 +192,6 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		f.savefig(outdirs)
 		print(outdirs)
 		
-
 	def dist_mean(m1s, m2s, m1, m2, sterr1, sterr2, KS=False):
 		figs=plt.figure()
 		bs=np.linspace(-1.9,-1.4,num=20, endpoint=False)
@@ -268,14 +267,14 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import math
 		f=plt.figure()
 		for n in range(len(lum1s)):
-			plt.plot(rad1s[n], lum1s[n],color='lightpink', marker='.', alpha=0.9)
+			plt.plot(rad1s[n], lum1s[n],color='lightpink', alpha=0.9)
 		for n in range(len(lum2s)):
-			plt.plot(rad2s[n], lum2s[n],color='lightsteelblue', marker='.', alpha=0.3)
+			plt.plot(rad2s[n], lum2s[n],color='lightsteelblue', alpha=0.3)
 
 		plt.xlabel('Log Radii (kpc)')
 		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
-		plt.plot(0,0, marker='.', color='lightpink', label='Not Bright ('+str(len(rad1s))+')')
-		plt.plot(0,0, marker='.', color='lightsteelblue', label='Bright ('+str(len(rad2s))+')')
+		plt.plot(0,0, color='lightpink', label='Not Bright ('+str(len(rad1s))+')')
+		plt.plot(0,0, color='lightsteelblue', label='Bright ('+str(len(rad2s))+')')
 		plt.legend(loc=0, prop={'size':14.0})
 		plt.ylim(5,9.0)
 		
@@ -292,9 +291,9 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		import math
 		f=plt.figure()
 		for n in range(len(lum1s)):
-			plt.plot(rad1s[n], lum1s[n],color='lightpink', marker='.', alpha=0.9)
+			plt.plot(rad1s[n], lum1s[n],color='lightpink', alpha=0.9)
 		for n in range(len(lum2s)):
-			plt.plot(rad2s[n], lum2s[n],color='lightsteelblue', marker='.', alpha=0.3)
+			plt.plot(rad2s[n], lum2s[n],color='lightsteelblue', alpha=0.3)
 	
 		plt.scatter(x1, y1, color='r', marker='o',label='Not Bright ('+str(len(rad1s))+')', zorder=4)
 		#plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=5)	
@@ -305,7 +304,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		plt.xlabel('Log Radii (kpc)')
 		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
 		plt.legend(loc=0, prop={'size':14.0})
-		outdirs=outdir+'2nTF.pdf'
+		outdirs=outdir+'2TF.pdf'
 		#plt.show()
 		f.savefig(outdirs)
 		

@@ -18,7 +18,7 @@ types=['mean', 'med']
 ty=types[0]
 
 comps=['oy', 'oF', 'yF']
-Toy=comps[1]
+Toy=comps[2]
 
 stax=True
 if stax==False:
@@ -166,9 +166,9 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		#plt.style.use('presentation')
 		f=plt.figure()
 		for n in range(len(lum1s)):
-			plt.plot(rad1s[n], lum1s[n],color='lightgrey', marker='.')
+			plt.plot(rad1s[n], lum1s[n],color='lightgrey')
 		for n in range(len(lum2s)):
-			plt.plot(rad2s[n], lum2s[n],color='lightgrey', marker='.')
+			plt.plot(rad2s[n], lum2s[n],color='lightgrey')
 		plt.scatter(x1, y1, color='r', marker='o',label=tag1[1]+' ('+str(len(inds1[0]))+')')
 		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+' Stacked Slope')
 		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	

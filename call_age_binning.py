@@ -50,7 +50,6 @@ def age_bin(datas):
 	
 		print('MF max= ', np.max(mass_fraction), 'MF min= ', np.min(mass_fraction))
 	
-	
 		agebins=(ageend+agestart)/2
 		ageranges=(ageend+agestart)
 		agebin=no_repeats(agebins)
@@ -91,12 +90,10 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	
 	#print(label)
 	#plt.bar(x, y, width=bwidth, align='center', color='None')
-	plt.bar(agebin, mf1, width=bwidth, align='center', color='red', alpha=0.85, label='Older Galaxies (Mass Fractions >'+per+')')
-	plt.bar(agebin, mf2, width=bwidth, align='center', color='blue', alpha=0.7,label='Younger Galaxies (Mass Fractions <'+per+')', zorder=2)
-	plt.plot(0,0, label='# Older LRGs= '+str(len(num1)), c='r')
-	plt.plot(0,0, label='# Younger LRGs=' +str(len(num2)),c='b')
-	plt.errorbar(agebin, mf1, yerr=err1,label='Standard Error on the Mean (Older)', fmt='.', color='m')
-	plt.errorbar(agebin, mf2, yerr=err2,label='Standard Error on the Mean (Younger)', fmt='.', color='c')
+	plt.bar(agebin, mf1, width=bwidth, align='center', color='red', alpha=0.85, label='Older: Mass Fractions >'+per+'('+str(len(num1))+')')
+	plt.bar(agebin, mf2, width=bwidth, align='center', color='blue', alpha=0.7,label='Younger: Mass Fractions <'+per+'('+str(len(num2))+')', zorder=2)
+	plt.errorbar(agebin, mf1, yerr=err1,label='Standard Error (Older)', fmt='.', color='m')
+	plt.errorbar(agebin, mf2, yerr=err2,label='Standard Error (Younger)', fmt='.', color='c')
 	plt.xlabel('Lookback Time (Gyr)')
 	plt.xscale('log')
 	#plt.yscale('log')
@@ -106,7 +103,7 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	plt.title('Age vs. Mass Fractions')
 	#plt.xlim(np.min(x)-bwidth[0], np.max(x)+bwidth[len(bwidth)-1]/2.0)
 	plt.xlim(np.min(start), np.max(end))
-	plt.legend(loc=2,prop={'size':8.0})
+	plt.legend(loc=2,prop={'size':14.0})
 	
 	plt.show()
 	outdirs=doutdir+'oy_agebin.pdf'
@@ -115,3 +112,18 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 
 	
 plot_stack_ages(agebin, mf_old, mf_young, err_old, err_young,start, end, num1, num2)
+
+med1=11.52
+med2=7.74
+def slopevmed(mold, myoung, med1, med2, err1, err2):
+	outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/'
+	fig=plt.figure()
+	plt.plot([med1, med2], [mold, myoung], color='k', marker='o')
+	plt.xlabel('Median Age (Gyr)')
+	plt.ylabel('Stacked Slope')
+	plt.title('Slope vs. Median Age')
+	plt.show()
+	fig.savefig(outdir+'slopevmed.pdf')
+	
+slopevmed(-1.66, -1.65, med1, med2, 0.06, 0.05)
+	

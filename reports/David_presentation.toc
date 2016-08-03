@@ -1,3 +1,4 @@
 \contentsline {section}{\numberline {1}Introduction}{1}
-\contentsline {section}{\numberline {2}Distinguishing Bright Center Objects}{1}
-\contentsline {section}{\numberline {3}SFH and Bright Center Objects}{2}
+\contentsline {section}{\numberline {2}Testing Photometric Issues}{1}
+\contentsline {section}{\numberline {3}Distinguishing Bright Objects}{1}
+\contentsline {section}{\numberline {4}SFH and Bright Center Objects}{3}

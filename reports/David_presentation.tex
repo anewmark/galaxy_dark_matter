@@ -9,8 +9,8 @@
 \usepackage{subfig}
 \graphicspath{{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/}{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/}}
 
- \title{Testing Photometry Issues in Luminous Red Galaxies}
- \author{Amanda Newmark}
+ \title{Understanding Mass Assembly of Luminous Red Galaxies in HSC}
+ \author{Amanda Newmark and Elinor Medezinski}
  \date{August 2016}
 
 \begin{document}
@@ -20,8 +20,9 @@
 \tableofcontents{}
 \section{Introduction}
 
-An objective of HSC Project is to understand the correlation between the star formation history and the mass assembly history of Luminous Red Galaxies (LRGs) through studying the slope of the luminosity density profiles.
+The Main objective of the Hyper Suprime-Cam Survey (HSC) is to find a correlation between a Luminous Red Galaxy's mass assembly history and the Dark Matter Halo. We focus on Luminous Red Galaxies because they are a well defined, homogeneous population: higher mass ellipticals with little to no star formation.
 
+\section{Testing Photometric Issues}
 In order to certify the validity of our results, it is essential that we test the photometric contamination caused by fainter galaxies that are not properly resolved, or \textit{deblended}. Such galaxies can saturate the apparent magnitude of the galaxy, most prominently at the outer stellar halo of the galaxy.
 
 \begin{table}[h]
@@ -51,7 +52,9 @@ flags.pixel.clipped.any \\ [1ex]
 
 The LOWZ catalogue flags specific galaxies we suspect have been contaminated. We determined that the LRGs flagged by at least one of the flags in Table \ref{table:1} influence the stacked luminosity profiles, and therefore it is necessary to disregard these galaxies. 
 
-\section{Distinguishing Bright Center Objects}
+Galaxies labeled as Bright Objects risk being not properly deblended, which can saturate its apparent magnitude. This would make it appear brighter than it's intrinsically brightness. Since galaxies flagged as Bright Objects make up about half of our remaining sample of galaxies, we have to determine whether or not these should be disregarded. 
+
+\section{Distinguishing Bright Objects}
 
 \begin{figure}[h!]
 \subfloat[Apparent Magnitude (m) Distribution\label{subfig:sfig11}]{ \includegraphics[width=0.5\textwidth]{3meanuplimmagdist.pdf}}
@@ -116,21 +119,21 @@ In accordance with Figure \ref{subfig:sfigb}, there is no significant difference
 \hline\hline
    & Stacked Slope & Median Slope \\
 \hline
-All Not Flagged & -1.639  $\pm$  0.024 & -1.641\\
+All Not Flagged &-1.71  $\pm$  0.016 & -1.686\\
 \hline
-All Flagged & -1.681  $\pm$  0.057 &-1.633\\
+All Flagged & -1.667  $\pm$  0.043 &-1.697\\
 \hline
-Old Galaxies & -1.66  $\pm$  0.06 & -1.63 \\
+Old Galaxies & -1.673  $\pm$  0.05 & -1.656 \\
 \hline
-Young Galaxies & -1.65  $\pm$  0.05 & -1.629\\
+Young Galaxies &-1.663  $\pm$  0.045 & -1.644\\
 \hline
-Old and Not Flagged & -1.67  $\pm$  0.06 &  -1.633\\
+Old and Not Flagged & -1.669  $\pm$  0.048 &  -1.652\\
 \hline
-Old and Flagged & -1.58  $\pm$  0.07 &  -1.619\\
+Old and Flagged & -1.611  $\pm$  0.058 &  -1.639\\
 \hline
-Young and Not Flagged &-1.645  $\pm$  0.05 & -1.629\\
+Young and Not Flagged & -1.672  $\pm$  0.042 & -1.633\\
 \hline
-Young and Flagged & -1.656  $\pm$  0.074 & -1.623\\
+Young and Flagged & -1.664  $\pm$  0.066 & -1.636\\
 \hline
 \end{tabular}
 \caption{These stacked and median slopes were calculated from specific population's individual galaxy slope distribution}

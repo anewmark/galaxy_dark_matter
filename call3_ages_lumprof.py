@@ -18,7 +18,7 @@ types=['mean', 'med']
 ty=types[0]
 
 comps=['oy', 'oF', 'yF']
-Toy=comps[2]
+Toy=comps[0]
 
 stax=True
 if stax==False:
@@ -28,6 +28,20 @@ else:
 txtdist= 'Figure2'
 txtslope='Figure1'
 
+my_band='i'
+maxin=None
+if my_band=='i':
+	inner=2.9 #do 3 for cut
+	if inner==1:
+		bnd=''
+	else:
+		bnd='+'
+if my_band=='g':
+	inner=2.3	 #do 3 for cut
+	if inner==1:
+		bnd='g'
+	else:
+		bnd='g+'
 
 Flags=['flags_pixel_bright_object_center', 'brobj_cen_flag-', 'No Bright Ojbect Centers', 'Only Bright Object Centers', 'brobj_cen_flag']
 
@@ -50,7 +64,7 @@ DATA=do_cuts(bigdata)
 print(np.min(DATA['Z_2']))
 DATA=DATA[DATA['Z_2']>0.2]
 def get_TF(data):
-	bandi=['i']
+	bandi=my_band
 	Flag, Not,lab= TFflag(bandi,Flags, data)
 	return Flag, Not
 def get_agebin_dat(Data, hm):
@@ -76,7 +90,7 @@ def get_agebin_dat(Data, hm):
 	return newdata, notdat
 	
 hh=0.60
-per=[str(np.round(hh*100,2)), '%']
+per=[str(np.round(hh*100,2)), '$\%$']
 per=''.join(per)
 odata, ydata= get_agebin_dat(DATA, hh)
 
@@ -90,16 +104,16 @@ Nold, Fold=get_TF(dataold)
 Nyoung, Fyoung=get_TF(datayoung)
 
 def my_halflights(dat1,binrange):
-	lum, rad, ld= get_ind_lums(dat1, bands, aperture, scale='linear')
+	lum, rad, ld= get_ind_lums(dat1, bands, aperture, my_band=my_band, scale='linear')
 	#print(lum[0], rad[0], lumd[0]) #this confirms it is all linear
-	x=6
+	x=6.0
 	if stax==True:
 		print('stax is true and doing upper cut now')
-		lum, rad, ld= upper_rad_cut(lum, rad, ld, x, proof=False)
+		#lum, rad, ld= upper_rad_cut(lum, rad, ld, x, proof=False)
 		
 	mlum,  mdens, mrad, mlogerr= get_avg_lums(lum, rad,ld, gr=binrange, type=ty)
-	r12s, r412s= get_halflight2(lum, rad, mult=x)
-	r12, r412= get_halflight2(mlum, mrad, mult=x)
+	r12s, r412s= get_halflight2(lum, rad, mult=x, inn=inner, maxout=np.max(mrad), maxin=maxin)
+	r12, r412= get_halflight2(mlum, mrad, mult=x, inn=inner, maxout=np.max(mrad), maxin=maxin)
 	
 	halftest=''
 	if halftest:
@@ -140,6 +154,7 @@ def my_halflights(dat1,binrange):
 		plt.show()
 		
 	#error is already in log
+	
 	print('min: ', np.min(Ms), 'max: ', np.max(Ms), 'mean: ', np.mean(Ms))
 	print('stacked m: ', M)
 	
@@ -150,8 +165,8 @@ def my_halflights(dat1,binrange):
 	return ind, means, ind_slope, mean_slopes
 
 def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2, subtitle, T, tag1, tag2):
-	outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/3'+T+ty+tag
-	doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/3'+T+ty+tag
+	outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/3'+bnd+T+ty+tag
+	doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/3'+bnd+T+ty+tag
 
 	#inds=[lum1, lumd1, rad1, hrad1]
 	#means=[mlum1,mdens1,mrad1,mhrad1, merr1]
@@ -161,39 +176,61 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 	def lum_mult_fit(lum1s, lum2s, rad1s, rad2s,x1, x2, y1, y2, xcut1, xcut2, yfit1, yfit2, sterr1, sterr2 , m1, m2, error1, error2, outdir=''):
 		print('Make Scatter Plots')
 		import matplotlib.pyplot as plt
+		plt.rc('text', usetex=True)
 		import numpy as np
 		import math
-		#plt.style.use('presentation')
-		f=plt.figure()
+
+		fig=plt.figure()
+		ax1, ax2 = plt.subplots(sharex=True)
+		plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) 
+		left1, bottom1, width1, height1 = [0.15, 0.3, 0.8, 0.6]
+		left2, bottom2, width2, height2 = [0.15, 0.1, 0.8, 0.15]
+		ax1 = fig.add_axes([left1, bottom1, width1, height1])
+		ax2 = fig.add_axes([left2, bottom2, width2, height2])
 		for n in range(len(lum1s)):
-			plt.plot(rad1s[n], lum1s[n],color='lightgrey')
+			ax1.plot(rad1s[n], lum1s[n],color='lightgrey')
 		for n in range(len(lum2s)):
-			plt.plot(rad2s[n], lum2s[n],color='lightgrey')
-		plt.scatter(x1, y1, color='r', marker='o',label=tag1[1]+' ('+str(len(inds1[0]))+')')
-		plt.plot(xcut1, yfit1, color='m', label=tag1[2]+' Stacked Slope')
-		plt.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
+			ax1.plot(rad2s[n], lum2s[n],color='lightgrey')
+		ax1.scatter(x1, y1, color='r', marker='o',label=tag1[1]+' ('+str(len(inds1[0]))+')')
+		ax1.plot(xcut1, yfit1, color='m', label=tag1[2]+' Stacked Slope')
+		ax1.errorbar(x1, y1, yerr=error1, fmt='.',color='r', zorder=4)	
 
-		plt.scatter(x2, y2, color='b', marker='o',label=tag2[1]+' ('+str(len(inds2[0]))+')')
-		plt.plot(xcut2, yfit2, color='c', label=tag2[2]+' Stacked Slope')
-		plt.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
+		ax1.scatter(x2, y2, color='b', marker='o',label=tag2[1]+' ('+str(len(inds2[0]))+')')
+		ax1.plot(xcut2, yfit2, color='c', label=tag2[2]+' Stacked Slope')
+		ax1.errorbar(x2, y2, yerr=error2, fmt='.',color='b', zorder=4)
 
-		plt.xlabel('Log Radii (kpc)')
-		plt.ylabel('Luminosity Densities (Lsolar/kpc^2)')
-		#plt.suptitle('Average Luminosity Densities v Radii', fontsize=16)
-		plt.suptitle(subtitle, fontsize=18)
-		plt.legend(loc=0, prop={'size':14.0})
-		#f.text(0.05, 0.05, txtslope, color='red', weight='bold')
+		#ax1.set_xlabel('Log Radii (kpc)')
+		ax1.set_ylabel(r'Log $\rho_L$ (L$_\odot$/kpc$^2$)')
+		ax1.set_xlim(0,2.5)
+		ax1.legend(loc=0, prop={'size':14.0})
+		
+		errlum=np.sqrt(error1**2+error2**2)
+		difflum=y2-y1
+		ax2.scatter(x2, difflum, c='k', marker='o', zorder=2)
+		ax2.errorbar(x2, difflum, yerr=errlum, fmt='None')
+		ax2.axhline(y=0.0,  color = 'g', linestyle='--')
+		ax2.set_ylabel(r'$\Delta\rho_L$')
+		#lumrange=[np.round(np.min(difflum),3), 0.0, np.round(np.max(difflum),3)] 
+		#ax2.set_yticklabels(lumrange)
+		ax2.set_xlabel('Log Radii (kpc)')
+		ax2.set_xlim(0,2.5)
+		ax2.set_ylim(-0.1, 0.1)
+		
+		ax1.set_title(subtitle, fontsize=18)
+		
+		plt.setp(ax1.get_xticklabels(), visible=False)
+		plt.setp(ax2.get_yticklabels([-1]), visible=True, fontsize=17)
+		plt.subplots_adjust(hspace=.0)
 		outdirs=outdir+'lumage.pdf'
-		#plt.show()
-		f.savefig(outdirs)
-		print(outdirs)
+		fig.savefig(outdirs)
+		print('Slope range: ', 10**np.min(xcut2), 10**np.max(xcut2))
+		print(outdirs)	
 
 	def dist_mean(m1s, m2s, m1, m2, sterr1, sterr2, KS=False):
 		import matplotlib.pyplot as plt
 		import numpy as np
 		import math
-		#plt.style.use('presentation')
-		figs=plt.figure()
+		figs=plt.figure() 
 		bs=np.linspace(-1.9,-1.4,num=20, endpoint=False)
 		n1, b1, p1= plt.hist(m1s, bs, color='red', label=tag1[1]+ ' ('+str(len(m1s))+')', alpha=0.65, zorder=2, normed=1)
 		n2, b2, p2= plt.hist(m2s,bs, color='blue', label=tag2[1]+ ' ('+str(len(m2s))+')', alpha=0.65,zorder=2,normed=1)
@@ -205,7 +242,8 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 			plt.plot(0,0, c='green', marker='*', label='K-S test is '+str(np.round(D,3)))
 			plt.xlim(np.min(M),-1.3)
 			ts='KS'
-		
+		M=np.concatenate((m1s, m2s))
+		plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) 
 		plt.axvline(x=m1, color='magenta',label=tag1[2]+' Stacked Slope', zorder=3)
 		#plt.plot(0,0, color='magenta', label=tag1[2]+'Median Slope = '+str(np.round(np.median(m1s),3)))
 		plt.axvline(x=m2, color='cyan', label=tag2[2]+' Stacked Slope', zorder=3)
@@ -214,6 +252,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		#plt.xlim(-1.9, -1.4)
 		plt.legend(loc=2, prop={'size':14.0})
 		plt.ylabel('Frequency')
+		plt.xlim(np.min(M), np.max(M))
 		#plt.suptitle('With '+ty+' Slopes', fontsize=16)
 		plt.suptitle(subtitle, fontsize=18)
 		
@@ -222,7 +261,7 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 		print('NF: ', np.round(m1,3),' $\pm$ ',np.round(sterr1,3))
 		print('F: ', np.round(m2,3),' $\pm$ ',np.round(sterr2,3))
 		print('NF median: ', np.median(m1s), 'F median: ', np.median(m2s))
-		
+		figs.tight_layout()
 		figs.savefig(outdirs)
 		print(outdirs)
 	
@@ -230,18 +269,19 @@ def my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2
 	
 	lum_mult_fit(inds1[1], inds2[1], inds1[2], inds2[2],means1[2], means2[2], means1[1], means2[1], mean_slopes1[2], mean_slopes2[2], mean_slopes1[4], mean_slopes2[4], mean_slopes1[5], mean_slopes2[5], mean_slopes1[0], mean_slopes2[0],means1[4], means2[4], outdir=outdir)
 
-
+	
 if Toy=='oy':
 	if ty=='med':
-		binrange=[2,60,20] #for med
+		binrange=[2,80,20] #for med
 	elif ty=='mean':
-		binrange=[2,60,20] #for mean
+		binrange=[2,80,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(dataold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(datayoung, binrange)
-	sub=['Populations: Old (>',per,') vs. Young (<', per,')'] 
+	sub=['Band ',my_band,': Old ($>$60$\%$) vs. Young ($<$60$\%$)'] 
 	sub=''.join(sub)	
 	t1=['# Older LRGs= '+str(len(inds1[0])), 'Older','Older']
 	t2=['# Younger LRGs= '+str(len(inds2[0])), 'Younger','Younger']
+	
 	
 if Toy=='oF':
 	if ty=='med':
@@ -254,6 +294,7 @@ if Toy=='oF':
 	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Bright','Not Bright']
 	t2=['# of LRGs= '+str(len(inds2[0])), 'Bright','Bright']
 	
+	
 if Toy=='yF':
 	if ty=='med':
 		binrange=[2,60,15] #for med
@@ -264,6 +305,7 @@ if Toy=='yF':
 	sub='Younger: Bright Center Objects Flag'		
 	t1=['# of LRGs= '+str(len(inds1[0])), 'Not Bright','Not Bright']
 	t2=['# of LRGs= '+str(len(inds2[0])), 'Bright','Bright']
+	
 	
 my_graphs(inds1, means1, ind_slope1, mean_slopes1, inds2, means2, ind_slope2, mean_slopes2, sub, Toy, t1, t2)
 

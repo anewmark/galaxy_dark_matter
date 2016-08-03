@@ -80,7 +80,7 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	print('bar width=', bwidth)
 	print(len(bwidth))
 	f=plt.figure()
-	#plt.style.use('presentation')
+	#plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) 
 	labels=np.append(start, end[len(end)-1])
 	#print('labels', labels)
 	#xspace=np.logspace(np.log10(np.min(labels)), np.log10(np.max(labels)), num=len(labels))
@@ -104,8 +104,8 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	#plt.xlim(np.min(x)-bwidth[0], np.max(x)+bwidth[len(bwidth)-1]/2.0)
 	plt.xlim(np.min(start), np.max(end))
 	plt.legend(loc=2,prop={'size':14.0})
-	
-	plt.show()
+	f.tight_layout()
+	#plt.show()
 	outdirs=doutdir+'oy_agebin.pdf'
 	f.savefig(outdirs)
 	print(outdirs)
@@ -113,17 +113,41 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	
 plot_stack_ages(agebin, mf_old, mf_young, err_old, err_young,start, end, num1, num2)
 
-med1=11.52
-med2=7.74
-def slopevmed(mold, myoung, med1, med2, err1, err2):
+
+#print(agebin)
+#print(np.round(mf_old,5))
+#print(np.round(mf_young,5))
+def get_medage(mf, agebin):
+	meanage=np.average(agebin, weights=mf)
+	print('mean age: ', meanage)
+	starts=np.array(start)
+	ends=np.array(end)
+	width=ends-starts
+	
+	err=0.5*width
+	ageerr= np.sqrt(np.sum((err*mf)**2)/(np.sum(mf))**2 )
+	print('Age err: ', ageerr)
+	return meanage, ageerr
+	
+medage1, agerr1=get_medage(mf_old, agebin)
+medage2, agerr2=get_medage(mf_young, agebin)
+
+def slopevmed(mold, myoung, med1, med2, yerr1, yerr2, xerr1, xerr2):
 	outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/'
 	fig=plt.figure()
-	plt.plot([med1, med2], [mold, myoung], color='k', marker='o')
-	plt.xlabel('Median Age (Gyr)')
+	
+	plt.scatter([med1, med2], [mold, myoung], color='r', marker='o')
+	plt.xlabel('Mean Age (Gyr)')
 	plt.ylabel('Stacked Slope')
-	plt.title('Slope vs. Median Age')
+	plt.errorbar([med1, med2], [mold, myoung], yerr=[yerr1, yerr2], xerr=[xerr1, xerr2], fmt='None')
+	y0=-1.799
+	plt.axhline(y=y0, c='k', linestyle='--', label='Theoretical Slope')
+	plt.axhspan(y0-4.114, y0+4.114, alpha=0.5, color='grey')
+	plt.legend(loc=0)
+	plt.title('Slope vs. Mean Age')
+	fig.tight_layout()
 	plt.show()
 	fig.savefig(outdir+'slopevmed.pdf')
 	
-slopevmed(-1.66, -1.65, med1, med2, 0.06, 0.05)
+slopevmed( -1.788, -1.791, medage1, medage2, 0.186, 0.154, agerr1, agerr2)
 	

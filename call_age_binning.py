@@ -113,10 +113,6 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	
 plot_stack_ages(agebin, mf_old, mf_young, err_old, err_young,start, end, num1, num2)
 
-
-#print(agebin)
-#print(np.round(mf_old,5))
-#print(np.round(mf_young,5))
 def get_medage(mf, agebin):
 	meanage=np.average(agebin, weights=mf)
 	print('mean age: ', meanage)
@@ -136,18 +132,19 @@ def slopevmed(mold, myoung, med1, med2, yerr1, yerr2, xerr1, xerr2):
 	outdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/'
 	fig=plt.figure()
 	
-	plt.scatter([med1, med2], [mold, myoung], color='r', marker='o')
+	plt.scatter([med1, med2], [mold, myoung], color='b', marker='o', s=40)
 	plt.xlabel('Mean Age (Gyr)')
-	plt.ylabel('Stacked Slope')
+	plt.ylabel(r'$\alpha_{stars}$')
 	plt.errorbar([med1, med2], [mold, myoung], yerr=[yerr1, yerr2], xerr=[xerr1, xerr2], fmt='None')
-	y0=-1.799
-	plt.axhline(y=y0, c='k', linestyle='--', label='Theoretical Slope')
-	plt.axhspan(y0-4.114, y0+4.114, alpha=0.5, color='grey')
+	y0=-1.892
+	errth=0.0946
+	plt.axhline(y=y0, c='k', linestyle='--', label=r'Theoretical $\alpha_{stars}$')
+	plt.axhspan(y0-errth, y0+errth, alpha=0.5, color='grey')
 	plt.legend(loc=0)
 	plt.title('Slope vs. Mean Age')
 	fig.tight_layout()
 	plt.show()
 	fig.savefig(outdir+'slopevmed.pdf')
 	
-slopevmed( -1.788, -1.791, medage1, medage2, 0.186, 0.154, agerr1, agerr2)
+slopevmed( -1.731,-1.746, medage1, medage2, 0.146, 0.116, agerr1, agerr2)
 	

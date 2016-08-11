@@ -28,7 +28,7 @@ else:
 txtdist= 'Figure2'
 txtslope='Figure1'
 
-my_band='i'
+my_band='g'
 maxin=None
 if my_band=='i':
 	inner=2.9 #do 3 for cut
@@ -285,9 +285,9 @@ if Toy=='oy':
 	
 if Toy=='oF':
 	if ty=='med':
-		binrange=[2,55,20] #for med
+		binrange=[2,80,20] #for med
 	elif ty=='mean':
-		binrange=[2,55,20] #for mean
+		binrange=[2,80,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nold, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fold, binrange)
 	sub='Older: Bright Center Objects Flag'			
@@ -297,9 +297,9 @@ if Toy=='oF':
 	
 if Toy=='yF':
 	if ty=='med':
-		binrange=[2,60,15] #for med
+		binrange=[2,80,20] #for med
 	elif ty=='mean':
-		binrange=[2,60,15] #for mean
+		binrange=[2,80,20] #for mean
 	inds1, means1, ind_slope1, mean_slopes1=my_halflights(Nyoung, binrange)
 	inds2, means2, ind_slope2, mean_slopes2=my_halflights(Fyoung, binrange)
 	sub='Younger: Bright Center Objects Flag'		

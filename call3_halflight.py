@@ -26,7 +26,7 @@ else:
 	tag='uplim'
 	#tag=''
 	
-my_band='i'
+my_band='g'
 maxin=None
 
 if my_band=='i':

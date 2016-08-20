@@ -1,5 +1,7 @@
-\contentsline {section}{\numberline {1}Introduction}{1}
-\contentsline {section}{\numberline {2}Getting Luminosity Density}{2}
-\contentsline {section}{\numberline {3}Testing Photometric Issues}{3}
-\contentsline {section}{\numberline {4}Star Formation History via VESPA}{4}
-\contentsline {section}{\numberline {5}Conclusion}{6}
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}Data}{2}
+\contentsline {section}{\numberline {3}Methodology}{3}
+\contentsline {section}{\numberline {4}Results}{3}
+\contentsline {subsection}{\numberline {4.1}Testing Photometric Issues}{3}
+\contentsline {subsection}{\numberline {4.2}Star Formation History via VESPA}{5}
+\contentsline {section}{\numberline {5}Conclusions and Future Work}{7}

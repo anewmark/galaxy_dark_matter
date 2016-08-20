@@ -7,7 +7,7 @@
 \usepackage{tikz}
 \usepackage[skip=2pt,font=scriptsize]{caption}
 \usepackage{subfig}
-\graphicspath{{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/}{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/}{/Users/amandanewmark/Desktop/}}
+\graphicspath{{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/clumps/}{/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/}{/Users/amandanewmark/Desktop/}{/Users/amandanewmark/repositories/galaxy_dark_matter/reports/}}
 
  \title{Understanding Mass Assembly of Luminous Red Galaxies in HSC}
  \author{Amanda Newmark and Elinor Medezinski}
@@ -19,30 +19,29 @@
 \end{titlepage}
 
 \begin{abstract}
-The slope of the stellar envelopes of galaxies are thought to connect the mass assembly history to their underlying Dark Matter Halos. In this study, we use the Hyper Suprime-Cam (HSC) Survey to probe the stellar envelopes of Luminous Red Galaxies (LRGs) to better understand this relationship. We make use of the HSC multi-aperture magnitudes measured for BOSS/LOWZ galaxies to construct luminosity density profiles. We find the slope of the stellar envelope by fitting the stacked luminosity density profile at large commoving distances, 22 kpc $< R_{comoving} <$ 61 kpc. Finding consistent slopes of younger and older galaxies, we conclude that there is no correlation between star formation epoch and mass assembly history for those massive, red, early-type galaxies. We plan to expand this study to different types of galaxy populations.
+The slope of the stellar envelopes of galaxies are thought to connect the mass assembly history to their underlying Dark Matter Halos. In this study, we use the Hyper Suprime-Cam (HSC) Survey to probe the stellar envelopes of Luminous Red Galaxies (LRGs) to better understand this relationship. We make use of the HSC multi-aperture magnitudes measured for BOSS/LOWZ galaxies to construct luminosity density profiles. We find the slope of the stellar envelope, $\alpha_{stars}$, by fitting the stacked luminosity density profile at large comoving distances, 22 kpc $< R_{comoving} <$ 61 kpc. Finding consistent slopes of younger and older galaxies, we conclude that there is no correlation between star formation epoch and mass assembly history for those massive, red, early-type galaxies. We plan to expand this study to different types of galaxy populations.
 \end{abstract}
-
 \tableofcontents{}
+
+\clearpage
 \section{Introduction}
+We believe there is a correlation between a Luminous Red Galaxy's mass assembly history and the Dark Matter Halo. We are interested in what governs the buildup of the stellar envelope. As galaxies merge with satellites, they grow from the inside out, forming larger and larger stellar envelopes.
+
+Previous observational experiments have studied different aspects of the stellar envelope, yet none have specifically used the stellar envelope as a probe of Mass Assembly and the underlying dark m. For example, one study linked Star Formation History (SFH) and mass assembly using Galaxy and Mass Assembly (GAMA). However, it does not specifically probe the stellar envelope (SOURCE BAUER). Another study used the Fornax Deep Survey to measure the relationship of the diffuse stellar halo of NGC 1399 and its SFH. This was only accomplished for a single galaxy, not a sample of galaxies (SOURCE IODICE).
+
+In our study, we plan to probe the stellar envelopes of Luminous Red Galaxies (LRGs) to assess the codependence of the Dark Matter Halo and Mass assembly. We focus on Luminous Red Galaxies because they are a well defined, homogeneous population. LRGs are all red and dead galaxies: higher mass ellipticals with little to no star formation.
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=.8\textwidth]{Pillepich_1}
-\caption{From Pillepich et al (2014), this figure shows 2D simulations of mass assembly of two different types of galaxies, an elliptical (upper row) and a disk (lower row). The third column shows the slope of the stellar envelopes, $\alpha_{stars}$.}
+\caption{This figure shows 2D simulations of mass assembly of two different types of galaxies, an elliptical (upper row) and a disk (lower row). The third column shows the slope of the stellar envelopes, $\alpha_{stars}$. \cite{Pillepich:2014}}
 \label{fig:meshaaa}
 \end{figure}
 
-The Main objective of the Hyper Suprime-Cam Survey (HSC) is to find a correlation between a Luminous Red Galaxy's mass assembly history and the Dark Matter Halo. We are interested in what governs the buildup of the stellar envelope. As galaxies merge with satellites, they grow from the inside out, forming larger and larger stellar envelopes. We focus on Luminous Red Galaxies because they are a well defined, homogeneous population: higher mass ellipticals with little to no star formation.
+From previous simulations, the stellar slopes ($\alpha_{stars}$) are thought to be direct evidence of the evolution of Dark Matter Haloes and their mass assembly histories. In Figure \ref{fig:meshaaa}, Pillepich, using the Illustris Simulations, demonstrates the mass assembly of elliptical and disk galaxies. We see that the environment surrounding elliptical galaxies are much lumpier, showing how it is collecting the masses of nearby galaxies. Pillepich then fits the outer averaged density profiles to a single power law, setting her limits from the half-light radius, $R_{1/2}$, to the virial radius, $R_{vir}$ \cite{Pillepich:2014}. The half-light radius is considered the innermost boundary of the stellar envelope, while the virial radius is thought to mark the outskirts.
 
-We are interested in what governs the buildup of the stellar envelope. As galaxies merge with satellites, they grow from the inside out, forming larger stellar halos.
 
-Stellar Slopes are thought to be direct evidence of the evolution of Dark Matter Haloes and their mass assembly histories. In Figure \ref{fig:meshaaa}, Pillepich, using the Illustris Simulations, demonstrates the mass assembly of elliptical and disk galaxies. We see that the environment surrounding elliptical galaxies are much lumpier, showing how it is collecting the masses of nearby galaxies. Pillepich then fits the outer averaged density profiles to a single power law, setting her limits from the half-light radius, $R_{1/2}$, to the virial radius, $R_{vir}$.
-
-Like Pillepich, we believe there is a coevolution of dark and visible matter throughout the formation of LRGs. By fitting the slopes of the stacked luminosity density profiles, we hope to connect the stellar envelope to the Dark Matter Halo. This will be accomplished by using the Hyper Suprime-Cam Survey.
-
-HSC is a multi-band imaging survey, containing Wide, Deep, and Ultra Deep layer fields. It contains the g, r, i, z, and y bands. For our experiment, we use the Wide layer fields and "i" band. In order to get the luminosity profiles of the galaxies, it takes spherical multi-aperture magnitudes for the LOWZ/BOSS LRGs. 
-
-\section{Getting Luminosity Density}
-
+\section{Data}
 \begin{table}[!htb]
 \centering
 \begin{tabular}{ccc} \toprule
@@ -63,7 +62,15 @@ aperture09 &70.0 &23.5\\ \bottomrule
 \hfill
 \end{table}
 
-Our catalogue provides the apparent magnitudes taken at ten different apertures, shown in Table \ref{table:1}. First, we have to get the absolute magnitudes for each aperture. We wish to know the absolute magnitude \textit{M} from its apparent magnitude \textit{m}, and therefore follow this equation from Hogg 2002
+We believe there is a coevolution of dark and visible matter throughout the formation of LRGs. By fitting the slopes of the stacked luminosity density profiles, we hope to connect the stellar envelope to the Dark Matter Halo. This will be accomplished by using the Hyper Suprime-Cam Survey.
+
+HSC is a multi-band imaging survey, containing Wide, Deep, and Ultra Deep layer fields. It contains the g, r, i, z, and y bands. For our experiment, we use the Wide layer fields and "i" band. In order to get the luminosity profiles of the galaxies, it takes spherical multi-aperture magnitudes for the LOWZ/BOSS LRGs. The different apertures can be seen in Table \ref{table:1}.
+
+As previously stated, there have been other observational studies that use stellar profiles as a probe of mass assembly. However, HSC goes to very low surface brightness for more galaxies and can probe the envelope better. We can study the dimmest parts of the stellar envelope that other tools cannot detect. Therefore, we believe it is the best tool for this experiment.
+
+\section{Methodology}
+
+Our catalogue provides the apparent magnitudes taken at ten different apertures, shown in Table \ref{table:1}. First, we have to get the absolute magnitudes for each aperture. We wish to know the absolute magnitude \textit{M} from its apparent magnitude \textit{m}, and therefore follow this equation from the article "The K Correction" \cite{Hogg:2002}
 \begin{equation}
 m=M + DM + K \;\;\;,
 \end{equation}
@@ -87,7 +94,8 @@ Finally, in order to obtain our luminosity densities, we must convert our apertu
 \rho_L=L/R_{comoving}^2 ( L_{solar}/kpc^2)
 \end{equation}
 
-\section{Testing Photometric Issues}
+\section{Results}
+\subsection{Testing Photometric Issues}
 In order to certify the validity of our results, it is essential that we test the photometric contamination caused by fainter galaxies that are not properly resolved, or \textit{deblended}. Such galaxies can saturate the apparent magnitude of the galaxy, most prominently at the outer stellar halo of the galaxy.
 
 \begin{table}[!htb]
@@ -139,7 +147,7 @@ Typically, the half light radius ($R_{1/2}$) marks the inner boundary of the ste
 
 Interestingly,  in Figure \ref{fig:mesh1}, we see that galaxies flagged as bright objects are in agreement with those not flagged. Therefore, we can conclude that it is not necessary to disregard LRGs flagged as "Bright Objects" from our sample population. 
 
-\section{Star Formation History via VESPA}
+\subsection{Star Formation History via VESPA}
 As galaxies merge, they accumulate more mass, and visible aspects of the stellar envelope are affected (i.e. the distribution of stars). However, the dark matter is also tidally disrupted. Since LRGs are all early-type galaxies, they have undergone mergers and accumulated most of their mass at this time.
 
 Before we can assess the relationship between Mass Assembly and the Dark Matter envelope, we first need to see if there is a correlation between mass assembly and star formation history (SFH). Using VESPA, an algorithm that fits the spectra of all LRGs in the Sloan Digital Sky Survey's (SDSS) final data release, we match with our original catalogue to get their total spectral data, such as SFH.
@@ -187,18 +195,23 @@ It is important to note that about half of the LRGs in the older and younger sam
 \label{fig:svm}
 \end{figure}
 
-As a final representation, Figure \ref{fig:svm} shows the relationship between mean age and slope. Pillepich plotted the theoretical luminosity density to comoving distance for elliptical galaxies. As a frame of reference, we found the theoretical  $\alpha_{stars}$ for the same stellar envelope range we used in our stacked slopes.
+As a final representation, Figure \ref{fig:svm} shows the relationship between mean age and slope. Pillepich plotted the theoretical luminosity density to comoving distance for elliptical galaxies \cite{Pillepich:2014}. As a frame of reference, we found the theoretical  $\alpha_{stars}$ for the same stellar envelope range we used in our stacked slopes.
 
 We found that  $\alpha_{stars}$ is not dependent upon its formation time. It is also within $1\sigma$ of what we expect to get, according to Pillepich. 
 
 
-\section{Conclusion}
+\section{Conclusions and Future Work}
 
 In conclusion, it is not necessary to remove bright objects (as long as we fit $\alpha_{stars}$ to the same physical range). We also found no correlation between accretion history and Star formation epoch, as determined by $\alpha_{stars}$. 
 
 The next step is to use Weak Gravitational Lensing to get the total halo mass, and ultimately find the relationship between $\alpha_{stars}$ and the Dark Matter Halo.
 
 This experiment can be varied. For example, we are only using one of HSC's six Wide Fields. We can expand to one of the other fields to compare our results. Furthermore, we can use a different galaxy population. LRGs might contain too narrow of a Star Formation History range. We might want to try younger, more active, bright galaxies, such as CMASS.
+
+\clearpage
+\bibliographystyle{apa}
+\bibliography{LRG_DM}
+\nocite{*}
 
 
 \end{document}

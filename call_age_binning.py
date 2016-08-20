@@ -71,21 +71,31 @@ num2=np.unique(ydata['SPECOBJID'])
 
 def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	doutdir='/Users/amandanewmark/repositories/galaxy_dark_matter/lumprofplots/distribution/'
-	start=np.array(start)
-	end=np.array(end)
+	
+	#in linear
+	start1=np.array(start)
+	end1=np.array(end)
+	arange1=end1-start1
+	
+	
+	
+	#change it to log
+	start=np.log10(start1)
+	end=np.log10(end1)
+	agebin=np.log10(agebin)
 	arange=end-start
-	arange=arange
-
-	bwidth=arange
+	print('Agebins: ', agebin)
+	
+	bwidth= arange #.2
 	print('bar width=', bwidth)
-	print(len(bwidth))
+	#print(len(bwidth))
 	f=plt.figure()
 	#plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) 
 	labels=np.append(start, end[len(end)-1])
-	#print('labels', labels)
+	labels10=np.append(start1, end1[len(end1)-1])
+	print('labels', labels)
 	#xspace=np.logspace(np.log10(np.min(labels)), np.log10(np.max(labels)), num=len(labels))
-	label=[str(n) for n in labels]
-	xsp=[math.log10(n) for n in labels]
+	label=[str(n) for n in labels10]
 	#print(xsp)
 	
 	#print(label)
@@ -94,10 +104,13 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	plt.bar(agebin, mf2, width=bwidth, align='center', color='blue', alpha=0.7,label='Younger: Mass Fractions <'+per+'('+str(len(num2))+')', zorder=2)
 	plt.errorbar(agebin, mf1, yerr=err1,label='Standard Error (Older)', fmt='.', color='m')
 	plt.errorbar(agebin, mf2, yerr=err2,label='Standard Error (Younger)', fmt='.', color='c')
+	#plt.xlim(np.log10(np.min(start)), np.log10(np.max(end)))
+	print(np.log10(np.min(start)), np.log10(np.max(end)))
 	plt.xlabel('Lookback Time (Gyr)')
-	plt.xscale('log')
 	#plt.yscale('log')
-	plt.xticks(labels, label=label, rotation='vertical')
+	plt.xticks(labels, label,rotation='vertical')
+	#plt.xscale('log')
+
 
 	plt.ylabel('Stacked Mass Fractions')
 	plt.title('Age vs. Mass Fractions')
@@ -105,11 +118,10 @@ def plot_stack_ages(agebin, mf1, mf2, err1, err2,start, end, num1, num2):
 	plt.xlim(np.min(start), np.max(end))
 	plt.legend(loc=2,prop={'size':14.0})
 	f.tight_layout()
-	#plt.show()
+	plt.show()
 	outdirs=doutdir+'oy_agebin.pdf'
 	f.savefig(outdirs)
 	print(outdirs)
-
 	
 plot_stack_ages(agebin, mf_old, mf_young, err_old, err_young,start, end, num1, num2)
 
@@ -146,5 +158,5 @@ def slopevmed(mold, myoung, med1, med2, yerr1, yerr2, xerr1, xerr2):
 	plt.show()
 	fig.savefig(outdir+'slopevmed.pdf')
 	
-slopevmed( -1.731,-1.746, medage1, medage2, 0.146, 0.116, agerr1, agerr2)
+#slopevmed( -1.731,-1.746, medage1, medage2, 0.146, 0.116, agerr1, agerr2)
 	

@@ -28,7 +28,7 @@ else:
 txtdist= 'Figure2'
 txtslope='Figure1'
 
-my_band='g'
+my_band='i'
 maxin=None
 if my_band=='i':
 	inner=2.9 #do 3 for cut

@@ -26,7 +26,7 @@ else:
 	tag='uplim'
 	#tag=''
 	
-my_band='g'
+my_band='i'
 maxin=None
 
 if my_band=='i':
@@ -72,7 +72,9 @@ def get_TF(data):
 newdata=do_cuts(bigdata)
 Flagdat, Notdat1=get_TF(newdata)
 
+print('Number of galaxies before Z cut', len(Notdat1))
 Notdat=Notdat1[Notdat1['Z']>0.2]   ## WANT X ZCUT FOR NOTDAT ONLY
+print('Number of galaxies after Z cut' , len(Notdat))
 
 def my_halflights(dat1):
 	lum, rad, ld= get_ind_lums(dat1, bands, aperture,my_band=my_band, scale='linear')
